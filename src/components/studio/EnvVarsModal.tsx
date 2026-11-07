@@ -144,3 +144,4 @@ export function EnvVarsModal({ isOpen, onClose, onSave }: EnvVarsModalProps) {
     </div>
   );
 }
+

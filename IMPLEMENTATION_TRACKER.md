@@ -73,3 +73,4 @@
 - [x] **Deployment**: Deployment engine supporting Supabase, Vercel, Netlify, and ZIP releases ([`src/app/deployments/page.tsx`](file:///c:/Users/asus/site%20builder%20combo/src/app/deployments/page.tsx))
 - [x] **Monitoring**: Real-time health probe ([`/api/health`](file:///c:/Users/asus/site%20builder%20combo/src/app/api/health/route.ts)) and provider connectivity ping
 - [x] **Backup and recovery**: Checkpoint restoration, JSZip codebase export, and GitHub remote backup ([`https://github.com/bajajaarna4-bit/sitebuilder`](https://github.com/bajajaarna4-bit/sitebuilder))
+

@@ -2,12 +2,13 @@ import { ProjectFile } from '@/types';
 
 /**
  * Builds an isolated, browser-executable HTML application bundle from project files.
- * Injects:
- * 1. Tailwind CSS CDN
- * 2. React 19 UMD & ReactDOM
- * 3. Babel standalone for live JSX/TSX compilation
- * 4. Error boundary & Console log interceptor (posting back to parent IDE)
- * 5. Visual Inspector instrumentation (hover outline, click-to-inspect)
+ * Uses Cloudflare CDNJS for ultra-low latency, high-reliability delivery.
+ * Features:
+ * 1. Safe dependency ordering (data models -> helper components -> App entrypoint)
+ * 2. Proper multi-line import/export stripping
+ * 3. In-browser Babel transformation with filename: 'app.tsx' for full TSX support
+ * 4. Runtime error capture posting back to parent studio
+ * 5. Visual element inspector bridge
  */
 export function buildPreviewHtml(files: ProjectFile[], activeRoute = '/'): string {
   // Find App.tsx or main entrypoint
@@ -15,36 +16,48 @@ export function buildPreviewHtml(files: ProjectFile[], activeRoute = '/'): strin
     (f) => f.path === '/src/App.tsx' || f.path === '/src/app/page.tsx' || f.path === '/src/index.tsx'
   );
 
-  const componentFiles = files.filter(
-    (f) =>
-      !f.isDirectory &&
-      (f.path.endsWith('.tsx') || f.path.endsWith('.ts') || f.path.endsWith('.jsx') || f.path.endsWith('.js')) &&
-      f.path !== appFile?.path
-  );
+  // Filter and sort component files so data models are declared first, then components
+  const componentFiles = files
+    .filter(
+      (f) =>
+        !f.isDirectory &&
+        (f.path.endsWith('.tsx') || f.path.endsWith('.ts') || f.path.endsWith('.jsx') || f.path.endsWith('.js')) &&
+        f.path !== appFile?.path
+    )
+    .sort((a, b) => {
+      // Prioritize data/ and types/ before components/
+      const aIsData = a.path.includes('/data/') || a.path.includes('/types/');
+      const bIsData = b.path.includes('/data/') || b.path.includes('/types/');
+      if (aIsData && !bIsData) return -1;
+      if (!aIsData && bIsData) return 1;
+      return a.path.localeCompare(b.path);
+    });
+
+  function sanitizeCode(code: string): string {
+    return code
+      // Remove multi-line and single-line imports
+      .replace(/import\s+[\s\S]*?from\s+['"][^'"]*?['"];?/g, '')
+      .replace(/import\s+['"][^'"]*?['"];?/g, '')
+      // Replace default export functions and classes
+      .replace(/export\s+default\s+function\s+([A-Za-z0-9_]+)/g, 'function $1')
+      .replace(/export\s+default\s+class\s+([A-Za-z0-9_]+)/g, 'class $1')
+      // Remove export default variable declarations
+      .replace(/export\s+default\s+/g, '')
+      // Remove named export keywords while preserving declarations
+      .replace(/export\s+(const|let|var|function|class|interface|type)\s+/g, '$1 ')
+      // Remove export { ... } blocks
+      .replace(/export\s*\{[\s\S]*?\};?/g, '')
+      .trim();
+  }
 
   let mergedCode = '';
 
-  // Bundle data & components
   for (const file of componentFiles) {
-    let cleanContent = file.content
-      .replace(/import\s+.*?from\s+['"].*?['"];?/g, '')
-      .replace(/export\s+default\s+/g, '')
-      .replace(/export\s+/g, '')
-      .trim();
-
-    mergedCode += `\n// File: ${file.path}\n` + cleanContent + '\n';
+    mergedCode += `\n// --- File: ${file.path} ---\n` + sanitizeCode(file.content) + '\n';
   }
 
-  // Bundle App entrypoint
   if (appFile) {
-    let appContent = appFile.content
-      .replace(/import\s+.*?from\s+['"].*?['"];?/g, '')
-      .replace(/export\s+default\s+function\s+([A-Za-z0-9_]+)/g, 'function $1')
-      .replace(/export\s+default\s+/g, '')
-      .replace(/export\s+/g, '')
-      .trim();
-
-    mergedCode += `\n// Entrypoint: ${appFile.path}\n` + appContent + '\n';
+    mergedCode += `\n// --- Entrypoint: ${appFile.path} ---\n` + sanitizeCode(appFile.content) + '\n';
   }
 
   return `<!DOCTYPE html>
@@ -65,15 +78,15 @@ export function buildPreviewHtml(files: ProjectFile[], activeRoute = '/'): strin
           }
         }
       }
-    }
+    };
   </script>
-  <!-- React 18 / 19 UMD -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <!-- Babel Standalone for live TSX/JSX parsing -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- React 18 UMD from Cloudflare CDNJS -->
+  <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <!-- Babel Standalone from Cloudflare CDNJS -->
+  <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.4/babel.min.js"></script>
   <style>
-    body { margin: 0; background-color: #090b0e; color: #f4f4f5; font-family: system-ui, -apple-system, sans-serif; }
+    body { margin: 0; background-color: #090b0e; color: #f4f4f5; font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
     /* Visual Inspector Outline */
     .nexus-inspect-hover {
       outline: 2px dashed #06b6d4 !important;
@@ -84,10 +97,22 @@ export function buildPreviewHtml(files: ProjectFile[], activeRoute = '/'): strin
       outline: 2px solid #3b82f6 !important;
       outline-offset: -2px;
     }
+    /* Hide scrollbar for carousels */
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+    .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body class="bg-zinc-950 text-white min-h-screen">
-  <div id="root"></div>
+  <div id="root">
+    <div style="padding: 40px; text-align: center; color: #a1a1aa; font-family: system-ui;">
+      <div style="display: inline-block; width: 24px; height: 24px; border: 2px solid #06b6d4; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px;"></div>
+      <div style="font-size: 13px; font-weight: 600;">Mounting Application Preview...</div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
 
   <!-- NEXUS Sandbox Bridge & Inspector Script -->
   <script>
@@ -95,7 +120,12 @@ export function buildPreviewHtml(files: ProjectFile[], activeRoute = '/'): strin
     window.onerror = function(msg, url, lineNo, columnNo, error) {
       window.parent.postMessage({
         type: 'NEXUS_RUNTIME_ERROR',
-        payload: { message: msg, line: lineNo, column: columnNo, stack: error ? error.stack : '' }
+        payload: {
+          message: msg,
+          line: lineNo,
+          column: columnNo,
+          stack: error ? error.stack : ''
+        }
       }, '*');
       return false;
     };
@@ -110,7 +140,7 @@ export function buildPreviewHtml(files: ProjectFile[], activeRoute = '/'): strin
           type: 'NEXUS_CONSOLE_LOG',
           payload: { level: level, message: text, timestamp: new Date().toISOString() }
         }, '*');
-        original.apply(console, arguments);
+        if (original) original.apply(console, arguments);
       };
     });
 
@@ -169,32 +199,52 @@ export function buildPreviewHtml(files: ProjectFile[], activeRoute = '/'): strin
     }, true);
   </script>
 
-  <!-- Application Component Code Execution -->
-  <script type="text/babel" data-presets="react,typescript">
-    const { useState, useEffect, useRef, useMemo, useCallback } = React;
+  <!-- Application Component Compilation and Mount -->
+  <script>
+    window.addEventListener('DOMContentLoaded', function() {
+      try {
+        var rawSource = ${JSON.stringify(mergedCode)};
 
-    try {
-      ${mergedCode}
+        if (typeof Babel === 'undefined') {
+          throw new Error('Babel compiler failed to load from CDN. Check your internet connection.');
+        }
 
-      // Mount App
-      const container = document.getElementById('root');
-      const root = ReactDOM.createRoot(container);
-      if (typeof App !== 'undefined') {
-        root.render(<App />);
-      } else {
-        root.render(
-          <div className="p-8 text-center text-zinc-400">
-            <h2 className="text-xl font-bold text-white mb-2">Awaiting Component Synthesis</h2>
-            <p className="text-xs">Submit an application prompt in the AI Assistant panel to generate your interface.</p>
-          </div>
+        // Compile TSX/JSX source using Babel Standalone
+        var transformResult = Babel.transform(rawSource, {
+          presets: [
+            ['react', { runtime: 'classic' }],
+            ['typescript', { isTSX: true, allExtensions: true }]
+          ],
+          filename: 'app.tsx'
+        });
+
+        // Run the compiled JavaScript inside a scoped Function
+        var scopeRunner = new Function(
+          'React',
+          'ReactDOM',
+          transformResult.code + '\\nreturn typeof App !== "undefined" ? App : null;'
         );
+
+        var AppComponent = scopeRunner(React, ReactDOM);
+
+        var container = document.getElementById('root');
+        var root = ReactDOM.createRoot(container);
+
+        if (AppComponent) {
+          root.render(React.createElement(AppComponent));
+          console.log('[NEXUS Preview] Application mounted successfully.');
+        } else {
+          container.innerHTML = '<div style="padding: 32px; text-align: center; color: #a1a1aa; font-family: monospace;"><h3>App component not found in VFS</h3></div>';
+        }
+      } catch (err) {
+        console.error("Compilation / Runtime Error:", err);
+        var container = document.getElementById('root');
+        if (container) {
+          container.innerHTML = '<div style="padding: 24px; color: #f87171; background: #18181b; border: 1px solid #7f1d1d; border-radius: 8px; margin: 24px; font-family: monospace;"><h3 style="font-weight: bold; margin-bottom: 8px;">Compilation / Runtime Error</h3><p>' + err.message + '</p></div>';
+        }
       }
-    } catch (err) {
-      console.error("Hydration Error:", err);
-      document.getElementById('root').innerHTML = '<div style="padding: 24px; color: #f87171; background: #18181b; border: 1px solid #7f1d1d; border-radius: 8px; margin: 24px; font-family: monospace;"><h3 style="font-weight: bold; margin-bottom: 8px;">Compilation / Runtime Error</h3><p>' + err.message + '</p></div>';
-    }
+    });
   </script>
 </body>
 </html>`;
 }
-
