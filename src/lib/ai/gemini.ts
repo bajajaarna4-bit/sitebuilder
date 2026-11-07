@@ -105,3 +105,4 @@ export class GeminiProviderAdapter implements ModelProviderAdapter {
     return result;
   }
 }
+

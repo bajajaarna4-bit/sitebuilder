@@ -29,3 +29,4 @@ export interface ModelProviderAdapter {
   streamText(prompt: string, apiKey: string | undefined, onChunk: (text: string) => void, options?: GenerationOptions): Promise<GenerationResult>;
   healthCheck(apiKey?: string): Promise<{ healthy: boolean; latencyMs: number; message: string }>;
 }
+

@@ -30,3 +30,4 @@ test('Preview Bundler HTML5 & Sandbox Isolation', async (t) => {
     assert.ok(html.includes('window.onerror'));
   });
 });
+

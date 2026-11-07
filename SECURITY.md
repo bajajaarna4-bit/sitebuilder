@@ -53,3 +53,4 @@ flowchart TD
 
 ### 2.6 Audit Logging
 - Every destructive action (project deletion, file overwrite, key update, deployment trigger) writes an immutable record to `nexus_audit_logs`.
+

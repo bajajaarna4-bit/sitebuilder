@@ -40,3 +40,4 @@ test('Autonomous Agent State Machine & 10-Role Orchestration', async (t) => {
     assert.strictEqual(states[currentIndex], 'READY');
   });
 });
+

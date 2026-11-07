@@ -233,3 +233,4 @@ CREATE TABLE IF NOT EXISTS public.nexustube_videos (
 `,
   },
 };
+

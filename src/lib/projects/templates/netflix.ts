@@ -276,3 +276,4 @@ CREATE TABLE IF NOT EXISTS public.streamflix_watchlists (
 `,
   },
 };
+

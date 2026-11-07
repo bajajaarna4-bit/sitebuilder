@@ -186,3 +186,4 @@ export interface PlanStep {
   description: string;
   status: 'pending' | 'running' | 'completed' | 'failed';
 }
+

@@ -104,3 +104,4 @@ export class OpenAIProviderAdapter implements ModelProviderAdapter {
     return result;
   }
 }
+

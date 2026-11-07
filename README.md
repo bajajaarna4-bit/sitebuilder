@@ -88,3 +88,4 @@ Visit `http://localhost:3000` to access the NEXUS AI platform.
 ## License
 
 Proprietary © NEXUS AI Systems. All rights reserved.
+

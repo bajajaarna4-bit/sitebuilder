@@ -231,3 +231,4 @@ CREATE TABLE IF NOT EXISTS public.aura_orders (
 `,
   },
 };
+

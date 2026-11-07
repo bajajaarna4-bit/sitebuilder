@@ -29,3 +29,4 @@ test('AI Model Provider Registry & Offline Deterministic Engine', async (t) => {
     assert.strictEqual(classifyPrompt('Build an Amazon-style e-commerce store'), 'E-Commerce Marketplace');
   });
 });
+

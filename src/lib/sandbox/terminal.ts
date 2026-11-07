@@ -49,3 +49,4 @@ export class VirtualTerminal {
     this.writeSystem('Terminal buffer cleared.');
   }
 }
+

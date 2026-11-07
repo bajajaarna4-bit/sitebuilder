@@ -46,3 +46,4 @@ test('Virtual File System (VFS) Operations', async (t) => {
     assert.strictEqual(vfs.getFile('/temp.txt'), undefined);
   });
 });
+

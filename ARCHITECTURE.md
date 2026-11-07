@@ -106,3 +106,4 @@ The agent orchestrator controls a deterministic finite state machine (FSM) trave
 2. **Credential Privacy**: AI provider keys and service tokens remain strictly server-side.
 3. **Storage Security**: Public assets are validated with MIME-type checks and size ceilings; dangerous file types are rejected.
 4. **Network Guard**: Sandbox environments have egress controls to prevent server-side request forgery (SSRF).
+

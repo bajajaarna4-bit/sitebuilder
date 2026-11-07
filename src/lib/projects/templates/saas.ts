@@ -125,3 +125,4 @@ CREATE TABLE IF NOT EXISTS public.nexusflow_metrics (
 `,
   },
 };
+

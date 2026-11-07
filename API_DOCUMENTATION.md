@@ -121,3 +121,4 @@ All API endpoints (except `/api/health` and `/api/auth/*`) require a valid sessi
   - Trigger deployment to target provider (`supabase`, `vercel`, `netlify`, `zip`).
 - **`GET /api/projects/:id/deployments`**
   - List deployment history, live URLs, and build logs.
+

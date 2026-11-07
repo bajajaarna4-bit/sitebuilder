@@ -75,3 +75,4 @@ The platform is designed to deploy natively to Vercel:
 ### 3.3 Health Checks & Monitoring
 - **Liveness Probe**: `GET /api/health`
 - **Readiness Probe**: Tests database connection and AI provider registry status.
+

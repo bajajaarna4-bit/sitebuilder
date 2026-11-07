@@ -184,3 +184,4 @@ CREATE TABLE IF NOT EXISTS public.instavibe_likes (
 `,
   },
 };
+

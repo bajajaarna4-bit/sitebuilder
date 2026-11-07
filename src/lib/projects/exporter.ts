@@ -20,3 +20,4 @@ export async function exportProjectToZip(projectName: string, files: ProjectFile
 
   return await zip.generateAsync({ type: 'blob' });
 }
+

@@ -6,14 +6,15 @@ import { useParams, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { Project, ProjectFile, AgentTask, TerminalLogEntry, VisualInspectorElement } from '@/types';
 import { VirtualFileSystem } from '@/lib/projects/vfs';
-import { selectTemplateForPrompt } from '@/lib/projects/templates';
+import { selectTemplateForPrompt, TEMPLATES } from '@/lib/projects/templates';
 import { exportProjectToZip } from '@/lib/projects/exporter';
+import { checkpointManager, ProjectCheckpoint } from '@/lib/projects/checkpoints';
+import { visionEngine } from '@/lib/ai/vision';
 import { buildPreviewHtml } from '@/lib/sandbox/bundler';
 import { VirtualTerminal } from '@/lib/sandbox/terminal';
 import { AgentOrchestrator } from '@/lib/agents/orchestrator';
 import {
   Sparkles,
-  Play,
   RotateCw,
   Smartphone,
   Tablet,
@@ -21,21 +22,23 @@ import {
   Download,
   Terminal as TerminalIcon,
   Code2,
-  Eye,
-  Sliders,
-  CheckCircle2,
-  AlertCircle,
   FileCode,
-  Folder,
   Send,
   StopCircle,
-  Maximize2,
-  ChevronRight,
   Database,
   Cpu,
-  RefreshCw,
-  Search,
   MousePointer,
+  History,
+  Image as ImageIcon,
+  Plus,
+  Trash2,
+  Save,
+  Check,
+  ChevronRight,
+  Upload,
+  Paintbrush,
+  Type,
+  Maximize2,
 } from 'lucide-react';
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
@@ -45,20 +48,44 @@ function StudioWorkspaceContent() {
   const searchParams = useSearchParams();
   const projectId = (params?.id as string) || 'default_project';
 
+  // --- VFS & Files State ---
   const [vfs] = useState(() => new VirtualFileSystem());
   const [files, setFiles] = useState<ProjectFile[]>([]);
   const [activeFilePath, setActiveFilePath] = useState<string>('/src/App.tsx');
   const [fileContent, setFileContent] = useState<string>('');
+  const [newFileName, setNewFileName] = useState('');
+  const [isCreatingFile, setIsCreatingFile] = useState(false);
 
+  // --- View & Mode State ---
   const [centerMode, setCenterMode] = useState<'preview' | 'code' | 'split'>('preview');
   const [viewport, setViewport] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [isInspectMode, setIsInspectMode] = useState(false);
   const [selectedElement, setSelectedElement] = useState<VisualInspectorElement | null>(null);
 
+  // --- Visual Styler State ---
+  const [elemText, setElemText] = useState('');
+  const [elemColor, setElemColor] = useState('#ffffff');
+  const [elemBg, setElemBg] = useState('#18181b');
+  const [elemPadding, setElemPadding] = useState('12px');
+  const [elemFontSize, setElemFontSize] = useState('14px');
+
+  // --- Checkpoints & Version History ---
+  const [checkpoints, setCheckpoints] = useState<ProjectCheckpoint[]>([]);
+  const [showCheckpointsModal, setShowCheckpointsModal] = useState(false);
+  const [checkpointMsg, setCheckpointMsg] = useState('');
+
+  // --- Screenshot-to-Code Modal ---
+  const [showVisionModal, setShowVisionModal] = useState(false);
+  const [visionImage, setVisionImage] = useState<string | null>(null);
+  const [visionHint, setVisionHint] = useState('');
+  const [isAnalyzingVision, setIsAnalyzingVision] = useState(false);
+
+  // --- Terminal & Logs ---
   const [terminal] = useState(() => new VirtualTerminal());
   const [terminalLogs, setTerminalLogs] = useState<TerminalLogEntry[]>([]);
   const [activeBottomTab, setActiveBottomTab] = useState<'terminal' | 'tests' | 'database'>('terminal');
 
+  // --- Agent & Orchestration State ---
   const [orchestrator] = useState(() => new AgentOrchestrator());
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -69,6 +96,7 @@ function StudioWorkspaceContent() {
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
+  // Initialize Project Files from Template
   useEffect(() => {
     const initialPrompt = searchParams.get('prompt') || 'Build a premium Netflix-like streaming platform';
     setPrompt(initialPrompt);
@@ -86,10 +114,15 @@ function StudioWorkspaceContent() {
       setFileContent(defaultFile.content);
     }
 
+    // Create Initial Checkpoint
+    checkpointManager.createCheckpoint(projectId, `Initial hydration: ${template.name}`, all, 'System');
+    setCheckpoints(checkpointManager.getCheckpoints(projectId));
+
     terminal.writeSystem(`Loaded template workspace: ${template.name}`);
     terminal.writeStdout(`VFS initialized with ${all.length} files. Sandbox preview ready.`);
   }, [projectId, searchParams, vfs, terminal]);
 
+  // Subscribe to Terminal Logs
   useEffect(() => {
     setTerminalLogs(terminal.getLogs());
     return terminal.subscribe((entry) => {
@@ -97,6 +130,7 @@ function StudioWorkspaceContent() {
     });
   }, [terminal]);
 
+  // Listen to Preview Iframe messages
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (!event.data) return;
@@ -109,8 +143,16 @@ function StudioWorkspaceContent() {
         terminal.writeStderr(`[Preview Error] Line ${line}: ${message}`);
       }
       if (event.data.type === 'NEXUS_ELEMENT_SELECTED') {
-        setSelectedElement(event.data.payload);
-        terminal.writeSystem(`Inspected element: <${event.data.payload.tagName}>`);
+        const el = event.data.payload;
+        setSelectedElement(el);
+        setElemText(el.innerText || '');
+        if (el.styles) {
+          if (el.styles.color) setElemColor(el.styles.color);
+          if (el.styles.backgroundColor) setElemBg(el.styles.backgroundColor);
+          if (el.styles.padding) setElemPadding(el.styles.padding);
+          if (el.styles.fontSize) setElemFontSize(el.styles.fontSize);
+        }
+        terminal.writeSystem(`Inspected element: <${el.tagName}>`);
       }
     };
 
@@ -118,6 +160,7 @@ function StudioWorkspaceContent() {
     return () => window.removeEventListener('message', handleMessage);
   }, [terminal]);
 
+  // Handle Dispatching Autonomous Prompt
   const handleRunAgent = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!prompt.trim() || isGenerating) return;
@@ -152,6 +195,10 @@ function StudioWorkspaceContent() {
       }
     });
 
+    // Create a Checkpoint for this generation turn
+    checkpointManager.createCheckpoint(projectId, `AI Prompt: ${prompt.slice(0, 35)}...`, vfs.getAllFiles(), 'AI:Orchestrator');
+    setCheckpoints(checkpointManager.getCheckpoints(projectId));
+
     setIsGenerating(false);
     refreshPreview();
   };
@@ -170,17 +217,35 @@ function StudioWorkspaceContent() {
     }
   };
 
+  // Toggle Visual Inspector
   const toggleInspector = () => {
     const next = !isInspectMode;
     setIsInspectMode(next);
     if (iframeRef.current && iframeRef.current.contentWindow) {
-      iframeRef.current.contentWindow.postMessage(
-        { type: 'SET_INSPECT_MODE', enabled: next },
-        '*'
-      );
+      iframeRef.current.contentWindow.postMessage({ type: 'SET_INSPECT_MODE', enabled: next }, '*');
     }
   };
 
+  // Live Apply Visual Styling to Preview & VFS
+  const applyVisualStyles = () => {
+    if (iframeRef.current && iframeRef.current.contentWindow) {
+      iframeRef.current.contentWindow.postMessage(
+        {
+          type: 'UPDATE_ELEMENT_STYLE',
+          styles: {
+            color: elemColor,
+            backgroundColor: elemBg,
+            padding: elemPadding,
+            fontSize: elemFontSize,
+          },
+        },
+        '*'
+      );
+      terminal.writeSystem(`Applied visual style to <${selectedElement?.tagName}>: color=${elemColor}, bg=${elemBg}`);
+    }
+  };
+
+  // Save Editor Content
   const handleEditorChange = (newVal?: string) => {
     if (newVal !== undefined) {
       setFileContent(newVal);
@@ -189,6 +254,109 @@ function StudioWorkspaceContent() {
     }
   };
 
+  // File Creation & Deletion
+  const handleCreateFile = () => {
+    if (!newFileName.trim()) return;
+    const clean = newFileName.startsWith('/') ? newFileName : `/${newFileName}`;
+    vfs.writeFile(projectId, clean, '// New file\n');
+    setFiles(vfs.getAllFiles());
+    setActiveFilePath(clean);
+    setFileContent('// New file\n');
+    setNewFileName('');
+    setIsCreatingFile(false);
+    terminal.writeSystem(`Created file: ${clean}`);
+  };
+
+  const handleDeleteFile = (path: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (confirm(`Delete ${path}?`)) {
+      vfs.deleteFile(path);
+      const all = vfs.getAllFiles();
+      setFiles(all);
+      if (activeFilePath === path) {
+        const next = all[0];
+        if (next) {
+          setActiveFilePath(next.path);
+          setFileContent(next.content);
+        }
+      }
+      terminal.writeSystem(`Deleted file: ${path}`);
+    }
+  };
+
+  // Checkpoint Snapshot Restore
+  const handleRestoreCheckpoint = (cp: ProjectCheckpoint) => {
+    vfs.loadSnapshot(projectId, cp.snapshot);
+    const all = vfs.getAllFiles();
+    setFiles(all);
+    const cur = all.find((f) => f.path === activeFilePath) || all[0];
+    if (cur) {
+      setActiveFilePath(cur.path);
+      setFileContent(cur.content);
+    }
+    refreshPreview();
+    setShowCheckpointsModal(false);
+    terminal.writeSystem(`Restored checkpoint "${cp.message}" (${cp.fileCount} files)`);
+  };
+
+  // Create Manual Checkpoint
+  const handleManualCheckpoint = (e: React.FormEvent) => {
+    e.preventDefault();
+    const msg = checkpointMsg || 'Manual Developer Checkpoint';
+    checkpointManager.createCheckpoint(projectId, msg, vfs.getAllFiles(), 'Developer');
+    setCheckpoints(checkpointManager.getCheckpoints(projectId));
+    setCheckpointMsg('');
+    terminal.writeSystem(`Created checkpoint: ${msg}`);
+  };
+
+  // Screenshot-to-Code Synthesis Flow
+  const handleVisionUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      setVisionImage(evt.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRunVisionSynthesis = async () => {
+    if (!visionImage) return;
+    setIsAnalyzingVision(true);
+    terminal.writeSystem('Vision Engine: Analyzing uploaded screenshot layout hierarchy...');
+
+    const result = await visionEngine.analyzeScreenshot(visionImage, visionHint);
+
+    // Write synthesized components into VFS
+    vfs.writeFile(projectId, '/src/App.tsx', result.generatedAppCode);
+    vfs.writeFile(
+      projectId,
+      '/VISION_ANALYSIS.json',
+      JSON.stringify(
+        {
+          layout: result.detectedLayout,
+          colorPalette: result.colorPalette,
+          components: result.componentsIdentified,
+          typography: result.typography,
+          timestamp: new Date().toISOString(),
+        },
+        null,
+        2
+      )
+    );
+
+    const all = vfs.getAllFiles();
+    setFiles(all);
+    setActiveFilePath('/src/App.tsx');
+    setFileContent(result.generatedAppCode);
+    setIsAnalyzingVision(false);
+    setShowVisionModal(false);
+    refreshPreview();
+
+    terminal.writeSystem(`Vision Synthesis complete! Synthesized ${result.detectedLayout}.`);
+  };
+
+  // Export Project ZIP
   const handleExportZip = async () => {
     const blob = await exportProjectToZip(`nexus_${projectId}`, vfs.getAllFiles());
     const url = URL.createObjectURL(blob);
@@ -202,6 +370,9 @@ function StudioWorkspaceContent() {
 
   const viewportWidthClass =
     viewport === 'mobile' ? 'max-w-[375px]' : viewport === 'tablet' ? 'max-w-[768px]' : 'w-full';
+
+  // Find Migration Files for Database Tab
+  const migrationFiles = files.filter((f) => f.path.includes('migration') || f.path.endsWith('.sql'));
 
   return (
     <div className="h-screen bg-surface-950 text-zinc-100 flex flex-col font-sans overflow-hidden">
@@ -222,6 +393,7 @@ function StudioWorkspaceContent() {
 
         {/* View Controls & Action Buttons */}
         <div className="flex items-center space-x-3">
+          {/* Viewport Toggles */}
           <div className="flex items-center space-x-1 bg-zinc-900 border border-zinc-800 p-0.5 rounded-lg text-xs">
             <button
               onClick={() => setViewport('desktop')}
@@ -246,6 +418,7 @@ function StudioWorkspaceContent() {
             </button>
           </div>
 
+          {/* Mode Switcher */}
           <div className="flex items-center space-x-1 bg-zinc-900 border border-zinc-800 p-0.5 rounded-lg text-xs">
             <button
               onClick={() => setCenterMode('preview')}
@@ -267,6 +440,27 @@ function StudioWorkspaceContent() {
             </button>
           </div>
 
+          {/* Screenshot-to-Website Button */}
+          <button
+            onClick={() => setShowVisionModal(true)}
+            className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 transition"
+            title="Upload design mockup or reference screenshot"
+          >
+            <ImageIcon className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Screenshot-to-App</span>
+          </button>
+
+          {/* Version History Button */}
+          <button
+            onClick={() => setShowCheckpointsModal(true)}
+            className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 transition"
+            title="Version checkpoints and restore"
+          >
+            <History className="w-3.5 h-3.5 text-amber-400" />
+            <span>History ({checkpoints.length})</span>
+          </button>
+
+          {/* Visual Inspector */}
           <button
             onClick={toggleInspector}
             className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border transition ${
@@ -305,33 +499,66 @@ function StudioWorkspaceContent() {
 
       {/* Main 3-Column Studio Body */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left Panel */}
+        {/* ================= LEFT PANEL: Project Explorer ================= */}
         <aside className="w-64 border-r border-zinc-800/80 bg-surface-950 flex flex-col flex-none">
           <div className="p-3 border-b border-zinc-800/80 flex items-center justify-between text-xs font-bold text-zinc-300">
             <span className="uppercase tracking-wider font-mono text-[10px] text-zinc-500">Explorer</span>
-            <span className="text-[10px] text-zinc-500 font-mono">{files.length} files</span>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setIsCreatingFile(!isCreatingFile)}
+                className="text-zinc-400 hover:text-cyan-400 text-xs"
+                title="New File"
+              >
+                <Plus className="w-3.5 h-3.5" />
+              </button>
+              <span className="text-[10px] text-zinc-500 font-mono">{files.length}</span>
+            </div>
           </div>
+
+          {isCreatingFile && (
+            <div className="p-2 border-b border-zinc-800/80 bg-zinc-900/60 flex items-center space-x-2">
+              <input
+                type="text"
+                placeholder="/src/components/MyComp.tsx"
+                value={newFileName}
+                onChange={(e) => setNewFileName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleCreateFile()}
+                className="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1 text-xs text-white font-mono focus:outline-none focus:border-cyan-500"
+              />
+              <button onClick={handleCreateFile} className="text-cyan-400 text-xs font-bold">✓</button>
+            </div>
+          )}
 
           <div className="flex-1 overflow-y-auto p-2 space-y-1">
             {files.map((file) => (
-              <button
+              <div
                 key={file.path}
                 onClick={() => {
                   setActiveFilePath(file.path);
                   setFileContent(file.content);
                 }}
-                className={`w-full flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-xs text-left transition font-mono truncate ${
+                className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs cursor-pointer transition font-mono truncate group ${
                   activeFilePath === file.path
                     ? 'bg-zinc-800 text-cyan-400 font-semibold border border-zinc-700/60'
                     : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60'
                 }`}
               >
-                <FileCode className="w-3.5 h-3.5 flex-none" />
-                <span className="truncate">{file.path}</span>
-              </button>
+                <div className="flex items-center space-x-2 truncate">
+                  <FileCode className="w-3.5 h-3.5 flex-none" />
+                  <span className="truncate">{file.path}</span>
+                </div>
+                <button
+                  onClick={(e) => handleDeleteFile(file.path, e)}
+                  className="opacity-0 group-hover:opacity-100 text-zinc-500 hover:text-red-400 p-0.5 rounded transition"
+                  title="Delete File"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              </div>
             ))}
           </div>
 
+          {/* Database & Integrations Quick Status */}
           <div className="p-3 border-t border-zinc-800/80 bg-surface-900/40 space-y-2 text-[11px]">
             <div className="flex items-center justify-between">
               <span className="text-zinc-400 flex items-center space-x-1">
@@ -350,9 +577,10 @@ function StudioWorkspaceContent() {
           </div>
         </aside>
 
-        {/* Center Panel */}
+        {/* ================= CENTER PANEL: Preview & Code ================= */}
         <main className="flex-1 flex flex-col bg-surface-950 overflow-hidden relative">
           <div className="flex-1 flex overflow-hidden">
+            {/* Live Preview Iframe */}
             {(centerMode === 'preview' || centerMode === 'split') && (
               <div className="flex-1 bg-zinc-950 flex flex-col items-center justify-center p-2 relative overflow-hidden border-r border-zinc-800/80">
                 <div className={`h-full ${viewportWidthClass} bg-black rounded-lg overflow-hidden border border-zinc-800 shadow-2xl relative transition-all duration-300`}>
@@ -365,28 +593,80 @@ function StudioWorkspaceContent() {
                   />
                 </div>
 
+                {/* Visual Inspector Selected Node Panel */}
                 {selectedElement && (
-                  <div className="absolute bottom-4 left-4 right-4 bg-surface-900/95 border border-cyan-500/40 backdrop-blur rounded-xl p-3 shadow-2xl flex items-center justify-between z-30">
-                    <div className="flex items-center space-x-3 text-xs">
-                      <span className="font-mono font-bold text-cyan-400 uppercase">&lt;{selectedElement.tagName}&gt;</span>
-                      <span className="text-zinc-300 truncate max-w-xs">{selectedElement.innerText || 'Selected Element'}</span>
+                  <div className="absolute bottom-4 left-4 right-4 bg-surface-900/95 border border-cyan-500/40 backdrop-blur rounded-2xl p-4 shadow-2xl space-y-3 z-30">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3 text-xs">
+                        <span className="font-mono font-bold text-cyan-400 uppercase">&lt;{selectedElement.tagName}&gt;</span>
+                        <span className="text-zinc-400 font-mono text-[11px] truncate max-w-xs">{selectedElement.classes}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => {
+                            setPrompt(`Update the styling and copy of <${selectedElement.tagName}>: "${selectedElement.innerText}"`);
+                          }}
+                          className="px-2.5 py-1 bg-cyan-500 text-black font-bold text-xs rounded-lg hover:bg-cyan-400 transition"
+                        >
+                          Ask AI to Refactor
+                        </button>
+                        <button onClick={() => setSelectedElement(null)} className="text-zinc-500 hover:text-white text-xs">✕</button>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => {
-                          setPrompt(`Update the styling and copy of <${selectedElement.tagName}>: "${selectedElement.innerText}"`);
-                        }}
-                        className="px-2.5 py-1 bg-cyan-500 text-black font-bold text-xs rounded-lg hover:bg-cyan-400 transition"
-                      >
-                        Ask AI to Refactor
-                      </button>
-                      <button onClick={() => setSelectedElement(null)} className="text-zinc-500 hover:text-white text-xs">✕</button>
+
+                    {/* Live Visual Properties Tweaker */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 border-t border-zinc-800/80 text-xs">
+                      <div>
+                        <label className="text-[10px] text-zinc-400 block mb-1">Text Color</label>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="color"
+                            value={elemColor}
+                            onChange={(e) => setElemColor(e.target.value)}
+                            className="w-6 h-6 rounded border border-zinc-700 bg-transparent cursor-pointer"
+                          />
+                          <span className="font-mono text-[11px] text-zinc-300">{elemColor}</span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] text-zinc-400 block mb-1">Background</label>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="color"
+                            value={elemBg}
+                            onChange={(e) => setElemBg(e.target.value)}
+                            className="w-6 h-6 rounded border border-zinc-700 bg-transparent cursor-pointer"
+                          />
+                          <span className="font-mono text-[11px] text-zinc-300">{elemBg}</span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] text-zinc-400 block mb-1">Padding</label>
+                        <input
+                          type="text"
+                          value={elemPadding}
+                          onChange={(e) => setElemPadding(e.target.value)}
+                          className="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-0.5 text-xs text-white font-mono"
+                        />
+                      </div>
+
+                      <div className="flex items-end">
+                        <button
+                          onClick={applyVisualStyles}
+                          className="w-full py-1.5 bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-xs rounded-lg border border-zinc-700 transition"
+                        >
+                          Apply Live Style
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}
               </div>
             )}
 
+            {/* Monaco Code Editor */}
             {(centerMode === 'code' || centerMode === 'split') && (
               <div className="flex-1 flex flex-col bg-surface-950 overflow-hidden">
                 <div className="h-9 border-b border-zinc-800 px-4 flex items-center justify-between bg-surface-900/60 flex-none text-xs font-mono text-zinc-300">
@@ -413,7 +693,7 @@ function StudioWorkspaceContent() {
             )}
           </div>
 
-          {/* Bottom Panel */}
+          {/* ================= BOTTOM PANEL: Terminal, Tests & Database ================= */}
           <div className="h-44 border-t border-zinc-800/80 bg-surface-950 flex flex-col flex-none">
             <div className="h-8 border-b border-zinc-800 px-4 flex items-center justify-between bg-surface-900/40 text-xs">
               <div className="flex items-center space-x-3 font-medium">
@@ -428,8 +708,15 @@ function StudioWorkspaceContent() {
                   onClick={() => setActiveBottomTab('tests')}
                   className={`flex items-center space-x-1.5 py-1 transition ${activeBottomTab === 'tests' ? 'text-cyan-400 font-bold border-b-2 border-cyan-400' : 'text-zinc-400 hover:text-white'}`}
                 >
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  <Check className="w-3.5 h-3.5 text-emerald-400" />
                   <span>Synthetic Tests (12/12 Passed)</span>
+                </button>
+                <button
+                  onClick={() => setActiveBottomTab('database')}
+                  className={`flex items-center space-x-1.5 py-1 transition ${activeBottomTab === 'database' ? 'text-cyan-400 font-bold border-b-2 border-cyan-400' : 'text-zinc-400 hover:text-white'}`}
+                >
+                  <Database className="w-3.5 h-3.5 text-blue-400" />
+                  <span>Database Migrations ({migrationFiles.length})</span>
                 </button>
               </div>
               <button
@@ -470,11 +757,23 @@ function StudioWorkspaceContent() {
                   <div>✓ Security boundary audit: 0 client-side credential leaks</div>
                 </div>
               )}
+
+              {activeBottomTab === 'database' && (
+                <div className="space-y-2">
+                  <div className="text-zinc-400 text-[11px]">Active Supabase PostgreSQL DDL Migrations:</div>
+                  {migrationFiles.map((m) => (
+                    <div key={m.path} className="p-2 bg-zinc-900 border border-zinc-800 rounded-lg space-y-1">
+                      <span className="text-cyan-400 font-bold">{m.path}</span>
+                      <pre className="text-[11px] text-zinc-300 max-h-24 overflow-y-auto">{m.content}</pre>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </main>
 
-        {/* Right Panel */}
+        {/* ================= RIGHT PANEL: AI Orchestrator & Feed ================= */}
         <aside className="w-80 border-l border-zinc-800/80 bg-surface-950 flex flex-col flex-none">
           <div className="p-3 border-b border-zinc-800/80 flex items-center justify-between text-xs font-bold text-zinc-300">
             <div className="flex items-center space-x-2">
@@ -551,6 +850,112 @@ function StudioWorkspaceContent() {
           </form>
         </aside>
       </div>
+
+      {/* ================= MODAL: Version History & Checkpoints ================= */}
+      {showCheckpointsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+          <div className="bg-surface-900 border border-zinc-800 rounded-2xl p-6 max-w-xl w-full shadow-2xl space-y-5">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <h2 className="text-base font-bold text-white flex items-center space-x-2">
+                <History className="w-4 h-4 text-amber-400" />
+                <span>Git Checkpoints & Version Snapshots</span>
+              </h2>
+              <button onClick={() => setShowCheckpointsModal(false)} className="text-zinc-500 hover:text-white">✕</button>
+            </div>
+
+            <form onSubmit={handleManualCheckpoint} className="flex space-x-2">
+              <input
+                type="text"
+                placeholder="Checkpoint commit message..."
+                value={checkpointMsg}
+                onChange={(e) => setCheckpointMsg(e.target.value)}
+                className="flex-1 bg-surface-950 border border-zinc-700 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500"
+              />
+              <button
+                type="submit"
+                className="px-4 py-1.5 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs rounded-xl transition"
+              >
+                Save Snapshot
+              </button>
+            </form>
+
+            <div className="max-h-72 overflow-y-auto space-y-2">
+              {checkpoints.map((cp) => (
+                <div key={cp.id} className="p-3 bg-surface-950 border border-zinc-800 rounded-xl flex items-center justify-between text-xs">
+                  <div>
+                    <h4 className="font-semibold text-white">{cp.message}</h4>
+                    <span className="text-[10px] text-zinc-500 font-mono">
+                      {new Date(cp.timestamp).toLocaleTimeString()} • {cp.fileCount} files • {cp.author}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => handleRestoreCheckpoint(cp)}
+                    className="px-3 py-1 bg-zinc-800 hover:bg-cyan-500 hover:text-black text-cyan-400 font-bold text-xs rounded-lg transition"
+                  >
+                    Restore
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= MODAL: Screenshot-to-Website Flow ================= */}
+      {showVisionModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-surface-900 border border-zinc-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <h2 className="text-base font-bold text-white flex items-center space-x-2">
+                <ImageIcon className="w-4 h-4 text-cyan-400" />
+                <span>Screenshot-to-Website Pipeline</span>
+              </h2>
+              <button onClick={() => setShowVisionModal(false)} className="text-zinc-500 hover:text-white">✕</button>
+            </div>
+
+            <p className="text-xs text-zinc-400">
+              Upload a design mockup or UI screenshot. NEXUS Vision Engine will analyze the layout hierarchy, typography, and color tokens, then synthesize a fresh React interface.
+            </p>
+
+            <div className="border-2 border-dashed border-zinc-700 rounded-xl p-6 text-center space-y-2 hover:border-cyan-500 transition cursor-pointer relative">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleVisionUpload}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+              />
+              {visionImage ? (
+                <img src={visionImage} alt="preview" className="max-h-40 mx-auto rounded-lg object-contain shadow" />
+              ) : (
+                <div className="space-y-1">
+                  <Upload className="w-8 h-8 text-zinc-500 mx-auto" />
+                  <span className="text-xs text-zinc-300 font-semibold block">Click to upload reference mockup</span>
+                  <span className="text-[10px] text-zinc-500 font-mono">PNG, JPG, WEBP</span>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-zinc-300">User Guidance Hint (Optional)</label>
+              <input
+                type="text"
+                placeholder="e.g., streaming platform, e-commerce, social feed"
+                value={visionHint}
+                onChange={(e) => setVisionHint(e.target.value)}
+                className="w-full bg-surface-950 border border-zinc-700 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500"
+              />
+            </div>
+
+            <button
+              onClick={handleRunVisionSynthesis}
+              disabled={!visionImage || isAnalyzingVision}
+              className="w-full py-2.5 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 text-black font-extrabold text-xs rounded-xl transition shadow-lg shadow-cyan-500/20"
+            >
+              {isAnalyzingVision ? 'Analyzing Hierarchy & Synthesizing...' : 'Decompose & Synthesize Application'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

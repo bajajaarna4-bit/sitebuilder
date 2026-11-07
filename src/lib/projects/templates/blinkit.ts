@@ -195,3 +195,4 @@ CREATE TABLE IF NOT EXISTS public.flashcart_items (
 `,
   },
 };
+
