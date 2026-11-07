@@ -227,13 +227,22 @@ function DashboardContent() {
             Autonomous full-stack applications managed by NEXUS AI orchestration engine.
           </p>
         </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold text-xs rounded-xl transition flex items-center justify-center space-x-2 shadow-lg shadow-cyan-500/10"
-        >
-          <Plus className="w-4 h-4" />
-          <span>New Application</span>
-        </button>
+        <div className="flex items-center space-x-3">
+          <Link
+            href="/autopilot"
+            className="px-4 py-2.5 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-xs rounded-xl transition flex items-center justify-center space-x-2 shadow-lg shadow-cyan-500/10 active:scale-95"
+          >
+            <Sparkles className="w-4 h-4 text-cyan-200" />
+            <span>NEXUS Autopilot</span>
+          </Link>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 hover:text-white border border-zinc-700 font-extrabold text-xs rounded-xl transition flex items-center justify-center space-x-2"
+          >
+            <Plus className="w-4 h-4" />
+            <span>New Application</span>
+          </button>
+        </div>
       </div>
 
       {/* Stats Row */}

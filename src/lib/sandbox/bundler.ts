@@ -218,10 +218,17 @@ export function buildPreviewHtml(files: ProjectFile[], activeRoute = '/'): strin
           filename: 'app.tsx'
         });
 
-        // Run the compiled JavaScript inside a scoped Function
+        // Run the compiled JavaScript inside a scoped Function with all React hooks unpacked
         var scopeRunner = new Function(
           'React',
           'ReactDOM',
+          'var useState = React.useState;\\n' +
+          'var useEffect = React.useEffect;\\n' +
+          'var useMemo = React.useMemo;\\n' +
+          'var useCallback = React.useCallback;\\n' +
+          'var useRef = React.useRef;\\n' +
+          'var createContext = React.createContext;\\n' +
+          'var useContext = React.useContext;\\n' +
           transformResult.code + '\\nreturn typeof App !== "undefined" ? App : null;'
         );
 

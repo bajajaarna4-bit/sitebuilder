@@ -18,6 +18,7 @@ export function NavigationBar() {
   const pathname = usePathname();
 
   const links = [
+    { href: '/autopilot', label: 'Autopilot', icon: Sparkles, highlight: true },
     { href: '/dashboard', label: 'Dashboard', icon: LayoutGrid },
     { href: '/models', label: 'Model Control Center', icon: Cpu },
     { href: '/deployments', label: 'Deployments', icon: Rocket },
@@ -50,11 +51,18 @@ export function NavigationBar() {
                 className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
                   isActive
                     ? 'bg-zinc-800/90 text-cyan-400 border border-zinc-700/60 shadow-sm'
+                    : link.highlight
+                    ? 'text-cyan-400 hover:text-cyan-300 hover:bg-cyan-950/30'
                     : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900/60'
                 }`}
               >
-                <Icon className="w-3.5 h-3.5" />
+                <Icon className={`w-3.5 h-3.5 ${link.highlight && !isActive ? 'text-cyan-400' : ''}`} />
                 <span>{link.label}</span>
+                {link.highlight && (
+                  <span className="text-[9px] font-bold px-1 py-0.2 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded">
+                    NEW
+                  </span>
+                )}
               </Link>
             );
           })}
