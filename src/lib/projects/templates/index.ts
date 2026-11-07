@@ -37,14 +37,14 @@ export function selectTemplateForPrompt(prompt: string): { key: TemplateKey; tem
   if (p.includes('instagram') || p.includes('social') || p.includes('photo') || p.includes('feed')) {
     return { key: 'instagram-social', template: instagramTemplate };
   }
+  if (p.includes('blinkit') || p.includes('quick-commerce') || p.includes('grocery') || p.includes('10-minute')) {
+    return { key: 'blinkit-quick', template: blinkitTemplate };
+  }
   if (p.includes('amazon') || p.includes('e-commerce') || p.includes('store') || p.includes('shop') || p.includes('cart')) {
     return { key: 'amazon-commerce', template: amazonTemplate };
   }
   if (p.includes('youtube') || p.includes('video') || p.includes('channel')) {
     return { key: 'youtube-platform', template: youtubeTemplate };
-  }
-  if (p.includes('blinkit') || p.includes('quick-commerce') || p.includes('grocery') || p.includes('10-minute')) {
-    return { key: 'blinkit-quick', template: blinkitTemplate };
   }
   return { key: 'nextjs-saas', template: saasTemplate };
 }

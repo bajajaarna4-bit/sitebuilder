@@ -10,6 +10,7 @@ import { selectTemplateForPrompt, TEMPLATES } from '@/lib/projects/templates';
 import { exportProjectToZip } from '@/lib/projects/exporter';
 import { checkpointManager, ProjectCheckpoint } from '@/lib/projects/checkpoints';
 import { visionEngine } from '@/lib/ai/vision';
+import { EnvVarsModal } from '@/components/studio/EnvVarsModal';
 import { buildPreviewHtml } from '@/lib/sandbox/bundler';
 import { VirtualTerminal } from '@/lib/sandbox/terminal';
 import { AgentOrchestrator } from '@/lib/agents/orchestrator';
@@ -73,6 +74,9 @@ function StudioWorkspaceContent() {
   const [checkpoints, setCheckpoints] = useState<ProjectCheckpoint[]>([]);
   const [showCheckpointsModal, setShowCheckpointsModal] = useState(false);
   const [checkpointMsg, setCheckpointMsg] = useState('');
+
+  // --- Environment Variables Modal ---
+  const [showEnvModal, setShowEnvModal] = useState(false);
 
   // --- Screenshot-to-Code Modal ---
   const [showVisionModal, setShowVisionModal] = useState(false);
@@ -448,6 +452,16 @@ function StudioWorkspaceContent() {
           >
             <ImageIcon className="w-3.5 h-3.5 text-cyan-400" />
             <span>Screenshot-to-App</span>
+          </button>
+
+          {/* Environment Variables Button */}
+          <button
+            onClick={() => setShowEnvModal(true)}
+            className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 transition"
+            title="Manage project environment variables"
+          >
+            <span className="font-mono text-cyan-400 font-bold text-[11px]">.env</span>
+            <span>Vars</span>
           </button>
 
           {/* Version History Button */}
@@ -900,6 +914,15 @@ function StudioWorkspaceContent() {
           </div>
         </div>
       )}
+
+      {/* ================= MODAL: Environment Variables ================= */}
+      <EnvVarsModal
+        isOpen={showEnvModal}
+        onClose={() => setShowEnvModal(false)}
+        onSave={(vars) => {
+          terminal.writeSystem(`Updated ${vars.length} environment variables in sandbox workspace.`);
+        }}
+      />
 
       {/* ================= MODAL: Screenshot-to-Website Flow ================= */}
       {showVisionModal && (
