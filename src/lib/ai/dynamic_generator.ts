@@ -3,6 +3,7 @@ import { googleAiNetflixTemplate } from '../projects/templates/google_ai_netflix
 import { pinterestCanvaAiTemplate } from '../projects/templates/pinterest_canva_ai';
 import { virtualOfficeAiTemplate } from '../projects/templates/virtual_office_ai';
 import { saaiProTemplate } from '../projects/templates/saai_pro';
+import { psycheReelsTemplate } from '../projects/templates/psyche_reels';
 
 /**
  * Dynamic Adaptive Application Synthesizer.
@@ -14,6 +15,17 @@ export function synthesizeDynamicApp(prompt: string): ProjectTemplate {
   const p = prompt.trim();
   const lower = p.toLowerCase();
   const safePromptEscaped = JSON.stringify(prompt);
+
+  // 0000. PSYCHE REELS & MINDSET PROFILER
+  if (
+    lower.includes('psyche') ||
+    (lower.includes('reel') && (lower.includes('psychology') || lower.includes('person') || lower.includes('mindset') || lower.includes('prefer') || lower.includes('pros') || lower.includes('osychology'))) ||
+    lower.includes('what type of person are you') ||
+    lower.includes('osychology') ||
+    lower.includes('philosphy')
+  ) {
+    return psycheReelsTemplate;
+  }
 
   // 000. SAAI.PRO AI ARCHITECT PORTFOLIO
   if (

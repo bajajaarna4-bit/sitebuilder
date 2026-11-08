@@ -10,6 +10,7 @@ import { googleAiNetflixTemplate } from './google_ai_netflix';
 import { pinterestCanvaAiTemplate } from './pinterest_canva_ai';
 import { virtualOfficeAiTemplate } from './virtual_office_ai';
 import { saaiProTemplate } from './saai_pro';
+import { psycheReelsTemplate } from './psyche_reels';
 import {
   spotifyClone,
   omegleClone,
@@ -44,6 +45,7 @@ export interface ProjectTemplate {
 }
 
 export const TEMPLATES: Record<string, ProjectTemplate> = {
+  'psyche-reels': psycheReelsTemplate,
   'saai-pro': saaiProTemplate,
   'virtual-office-ai': virtualOfficeAiTemplate,
   'pinterest-canva-ai': pinterestCanvaAiTemplate,
@@ -79,6 +81,7 @@ export const TEMPLATES: Record<string, ProjectTemplate> = {
 };
 
 export type TemplateKey =
+  | 'psyche-reels'
   | 'saai-pro'
   | 'virtual-office-ai'
   | 'pinterest-canva-ai'
@@ -115,6 +118,28 @@ export type TemplateKey =
 
 export function selectTemplateForPrompt(prompt: string): { key: TemplateKey; template: ProjectTemplate } {
   const p = (prompt || '').toLowerCase().trim();
+
+  // 0000. PSYCHE REELS (मनःसूत्रम्) — Psychological Reel Stream & Mindset Profiler
+  if (
+    p.includes('psyche') ||
+    (p.includes('reel') &&
+      (p.includes('person') ||
+        p.includes('psychology') ||
+        p.includes('philosophy') ||
+        p.includes('mindset') ||
+        p.includes('prefer') ||
+        p.includes('pros') ||
+        p.includes('cons') ||
+        p.includes('osychology') ||
+        p.includes('philosphy'))) ||
+    p.includes('what type of person are you') ||
+    p.includes('osychology') ||
+    p.includes('philosphy') ||
+    (p.includes('watching') && p.includes('reels')) ||
+    (p.includes('insta reels') && p.includes('prefer'))
+  ) {
+    return { key: 'psyche-reels', template: psycheReelsTemplate };
+  }
 
   // 000. SAAI.PRO — AI & Autonomous Systems Architect Portfolio (Sahir Veerancheri)
   if (

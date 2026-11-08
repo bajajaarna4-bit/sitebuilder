@@ -762,3 +762,4 @@ export const saaiProTemplate: ProjectTemplate = {
 `,
   },
 };
+

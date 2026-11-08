@@ -28,6 +28,7 @@ export default function MarketingPage() {
   const [heroPrompt, setHeroPrompt] = useState('');
 
   const PROMPT_SUGGESTIONS = [
+    { label: 'Psyche Reels Mindset Profiler', prompt: 'watch insta reels tuned to preferences and profile personality with psychology philosophy pros cons and mindset advice' },
     { label: 'saai.pro AI Systems Portfolio', prompt: 'build portfolio like saai.pro with Multi-LLM Parliament and Kronos forecaster' },
     { label: 'AI Agent Virtual Office', prompt: 'ai agent , virtual office with 2D spatial floor plan and swarm dispatcher' },
     { label: 'Pinterest × Canva AI Studio', prompt: 'pinterest type uff asthetics and canva and google ai webiste damn' },

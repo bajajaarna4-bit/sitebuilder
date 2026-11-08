@@ -120,7 +120,8 @@ function StudioWorkspaceContent() {
     // 2. Check projectId keywords
     if (!resolvedTemplate && projectId) {
       const pId = projectId.toLowerCase();
-      if (pId.includes('saai') || pId.includes('parliament') || pId.includes('kronos')) resolvedTemplate = TEMPLATES['saai-pro'];
+      if (pId.includes('psyche') || pId.includes('mindset') || pId.includes('reels')) resolvedTemplate = TEMPLATES['psyche-reels'];
+      else if (pId.includes('saai') || pId.includes('parliament') || pId.includes('kronos')) resolvedTemplate = TEMPLATES['saai-pro'];
       else if (pId.includes('office') || pId.includes('syndicate') || pId.includes('swarm')) resolvedTemplate = TEMPLATES['virtual-office-ai'];
       else if (pId.includes('pinterest') || pId.includes('aura') || pId.includes('aesthetic')) resolvedTemplate = TEMPLATES['pinterest-canva-ai'];
       else if (pId.includes('cinema') || pId.includes('google_ai') || pId.includes('google-ai') || pId.includes('streamflix')) resolvedTemplate = TEMPLATES['google-ai-netflix'];

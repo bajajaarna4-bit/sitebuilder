@@ -729,3 +729,4 @@ export const virtualOfficeAiTemplate: ProjectTemplate = {
 `,
   },
 };
+
