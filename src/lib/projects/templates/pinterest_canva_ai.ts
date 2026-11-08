@@ -843,3 +843,4 @@ export const pinterestCanvaAiTemplate: ProjectTemplate = {
 `,
   },
 };
+

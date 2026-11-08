@@ -28,6 +28,8 @@ export default function MarketingPage() {
   const [heroPrompt, setHeroPrompt] = useState('');
 
   const PROMPT_SUGGESTIONS = [
+    { label: 'saai.pro AI Systems Portfolio', prompt: 'build portfolio like saai.pro with Multi-LLM Parliament and Kronos forecaster' },
+    { label: 'AI Agent Virtual Office', prompt: 'ai agent , virtual office with 2D spatial floor plan and swarm dispatcher' },
     { label: 'Pinterest × Canva AI Studio', prompt: 'pinterest type uff asthetics and canva and google ai webiste damn' },
     { label: 'Google AI & Netflix Cinema', prompt: 'Build a premium Google AI Studio and Netflix Cinema streaming platform with 4K video playback, category carousels, and multilingual voice' },
     { label: 'Subway Surfers 3D Runner', prompt: 'Build a premium Subway Surfers 3D endless runner game with real-time controls' },

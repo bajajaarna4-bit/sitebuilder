@@ -1,6 +1,8 @@
 import { ProjectTemplate } from '../projects/templates';
 import { googleAiNetflixTemplate } from '../projects/templates/google_ai_netflix';
 import { pinterestCanvaAiTemplate } from '../projects/templates/pinterest_canva_ai';
+import { virtualOfficeAiTemplate } from '../projects/templates/virtual_office_ai';
+import { saaiProTemplate } from '../projects/templates/saai_pro';
 
 /**
  * Dynamic Adaptive Application Synthesizer.
@@ -12,6 +14,28 @@ export function synthesizeDynamicApp(prompt: string): ProjectTemplate {
   const p = prompt.trim();
   const lower = p.toLowerCase();
   const safePromptEscaped = JSON.stringify(prompt);
+
+  // 000. SAAI.PRO AI ARCHITECT PORTFOLIO
+  if (
+    lower.includes('saai.pro') ||
+    lower.includes('saai,pro') ||
+    lower.includes('saai') ||
+    lower.includes('sahir') ||
+    lower.includes('multi-llm parliament') ||
+    lower.includes('kronos') ||
+    lower.includes('dlfm')
+  ) {
+    return saaiProTemplate;
+  }
+
+  // 001. AUTONOMOUS AI AGENT VIRTUAL OFFICE
+  if (
+    (lower.includes('agent') && (lower.includes('office') || lower.includes('virtual') || lower.includes('swarm') || lower.includes('spatial'))) ||
+    lower.includes('virtual office') ||
+    lower.includes('ai agent')
+  ) {
+    return virtualOfficeAiTemplate;
+  }
 
   // 00. PINTEREST, CANVA, GOOGLE AI, AESTHETICS & MOODBOARDS
   if (

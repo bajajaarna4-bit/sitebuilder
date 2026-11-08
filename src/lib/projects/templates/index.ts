@@ -8,6 +8,8 @@ import { emergentAntigravityTemplate } from './emergent_antigravity';
 import { pokiClone } from './poki';
 import { googleAiNetflixTemplate } from './google_ai_netflix';
 import { pinterestCanvaAiTemplate } from './pinterest_canva_ai';
+import { virtualOfficeAiTemplate } from './virtual_office_ai';
+import { saaiProTemplate } from './saai_pro';
 import {
   spotifyClone,
   omegleClone,
@@ -42,6 +44,8 @@ export interface ProjectTemplate {
 }
 
 export const TEMPLATES: Record<string, ProjectTemplate> = {
+  'saai-pro': saaiProTemplate,
+  'virtual-office-ai': virtualOfficeAiTemplate,
   'pinterest-canva-ai': pinterestCanvaAiTemplate,
   'google-ai-netflix': googleAiNetflixTemplate,
   'poki-games': pokiClone,
@@ -75,6 +79,8 @@ export const TEMPLATES: Record<string, ProjectTemplate> = {
 };
 
 export type TemplateKey =
+  | 'saai-pro'
+  | 'virtual-office-ai'
   | 'pinterest-canva-ai'
   | 'google-ai-netflix'
   | 'poki-games'
@@ -109,6 +115,34 @@ export type TemplateKey =
 
 export function selectTemplateForPrompt(prompt: string): { key: TemplateKey; template: ProjectTemplate } {
   const p = (prompt || '').toLowerCase().trim();
+
+  // 000. SAAI.PRO — AI & Autonomous Systems Architect Portfolio (Sahir Veerancheri)
+  if (
+    p.includes('saai.pro') ||
+    p.includes('saai,pro') ||
+    p.includes('saai') ||
+    p.includes('sahir') ||
+    p.includes('multi-llm parliament') ||
+    p.includes('kronos') ||
+    p.includes('dlfm') ||
+    p.includes('latent field') ||
+    p.includes('axiom of truth') ||
+    (p.includes('portfolio') && (p.includes('architect') || p.includes('autonomous') || p.includes('systems') || p.includes('quant')))
+  ) {
+    return { key: 'saai-pro', template: saaiProTemplate };
+  }
+
+  // 001. Autonomous AI Agent Virtual Office & Spatial Swarm Hub
+  if (
+    (p.includes('agent') && (p.includes('office') || p.includes('virtual') || p.includes('swarm') || p.includes('spatial') || p.includes('workforce'))) ||
+    p.includes('virtual office') ||
+    p.includes('ai agent') ||
+    p.includes('spatial office') ||
+    p.includes('agent swarm') ||
+    p.includes('syndicate')
+  ) {
+    return { key: 'virtual-office-ai', template: virtualOfficeAiTemplate };
+  }
 
   // 00. Pinterest Visual Moodboard × Canva Studio × Google AI Aesthetic Synthesizer
   if (
