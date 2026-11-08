@@ -229,37 +229,31 @@ export default function DatabasePage() {
     fetchTableRows(selectedTable.name);
   }, [selectedTable]);
 
-  // Execute Custom SQL Query
+  // Execute Custom SQL Query via Secure Backend Route
   const handleRunQuery = async () => {
     setQueryRunning(true);
     setQueryError(null);
-    const start = performance.now();
 
     try {
-      // Execute via Supabase REST query
-      const targetTable = SCHEMA_TABLES.find((t) => sqlQuery.toLowerCase().includes(t.name.toLowerCase()))?.name || 'nexus_projects';
-      const { data, error } = await supabase.from(targetTable).select('*').limit(10);
+      const res = await fetch('/api/database/query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: sqlQuery }),
+      });
 
-      const elapsed = Math.round(performance.now() - start);
+      const json = await res.json();
 
-      if (error) {
-        // Fallback demo execution
-        const fallback = generateFallbackRows(targetTable);
-        setQueryResults({
-          columns: Object.keys(fallback[0] || {}),
-          rows: fallback,
-          timeMs: Math.max(elapsed, 18),
-        });
+      if (!json.success) {
+        setQueryError(json.error || 'Failed to execute query');
       } else {
-        const rows = data && data.length > 0 ? data : generateFallbackRows(targetTable);
         setQueryResults({
-          columns: Object.keys(rows[0] || {}),
-          rows,
-          timeMs: Math.max(elapsed, 24),
+          columns: json.columns || [],
+          rows: json.rows || [],
+          timeMs: json.executionTimeMs || 24,
         });
       }
     } catch (err: any) {
-      setQueryError(err.message || 'Error executing query');
+      setQueryError(err.message || 'Error executing query on cluster');
     } finally {
       setQueryRunning(false);
     }
@@ -662,3 +656,4 @@ export default function DatabasePage() {
     </div>
   );
 }
+

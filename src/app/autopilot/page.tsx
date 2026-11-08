@@ -146,24 +146,48 @@ const STAGES: AutopilotStage[] = [
 
 const SUGGESTIONS = [
   {
-    label: 'Streaming Platform (Netflix-Style)',
-    prompt:
-      'Build a premium streaming platform with user login, movie categories, video playback, subscriptions, search, and an admin dashboard.',
+    label: 'Canva Design Studio',
+    prompt: 'Build a Canva graphic design studio with drag-and-drop elements, Instagram/YouTube presets, and PNG export.',
   },
   {
-    label: 'Social Network (Instagram-Style)',
-    prompt:
-      'Create a full Instagram-style social application with feed, stories, like/comment, and direct messaging.',
+    label: 'Ubuntu Linux Desktop',
+    prompt: 'Build an Ubuntu Linux 24.04 desktop OS simulator with interactive Bash terminal, dock, and file manager.',
   },
   {
-    label: 'Quick-Commerce (Blinkit-Style)',
-    prompt:
-      'Build a Blinkit-style quick-commerce application with 10-minute delivery tracking and live cart.',
+    label: 'Spotify Web Player',
+    prompt: 'Build a Spotify music player with playlists, track scrubber, now-playing bottom bar, and search.',
   },
   {
-    label: 'E-Commerce Store (Amazon-Style)',
-    prompt:
-      'Build a modern Amazon-style e-commerce store with product catalog, cart, checkout, and inventory management.',
+    label: 'Omegle Random Chat',
+    prompt: 'Build an Omegle 1-on-1 random video and text chat platform with stranger matching and typing status.',
+  },
+  {
+    label: 'Figma UI Canvas',
+    prompt: 'Build a Figma vector design studio with infinite canvas, layer tree hierarchy, and properties inspector.',
+  },
+  {
+    label: 'Zomato Food Delivery',
+    prompt: 'Build a Zomato food delivery app with restaurant discovery, menu dish selector, and live cart checkout.',
+  },
+  {
+    label: 'TikTok / VibeShort Feed',
+    prompt: 'Build a TikTok vertical video streaming feed with like hearts, comments, share, and audio rotation.',
+  },
+  {
+    label: 'GitHub Code Repo',
+    prompt: 'Build a GitHub repository clone with file tree, commit logs, pull requests, and markdown README.',
+  },
+  {
+    label: 'Google & Maps',
+    prompt: 'Build a Google Search and Google Maps navigation explorer with autocomplete and route pins.',
+  },
+  {
+    label: 'NEXUS Omni (WhatsApp + Antigravity)',
+    prompt: 'Build a website that is a mix of emergent antigravity prompt perfect and whatsapp insta like ui and auto-fix bugs.',
+  },
+  {
+    label: 'Netflix Streaming 4K',
+    prompt: 'Build a premium streaming platform with user login, movie categories, video playback, subscriptions, search, and an admin dashboard.',
   },
 ];
 

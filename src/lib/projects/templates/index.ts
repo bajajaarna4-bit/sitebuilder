@@ -16,6 +16,7 @@ import {
   canvaClone,
   ubuntuClone,
 } from './clones';
+import { synthesizeDynamicApp } from '@/lib/ai/dynamic_generator';
 
 export interface ProjectTemplate {
   name: string;
@@ -44,6 +45,7 @@ export const TEMPLATES: Record<string, ProjectTemplate> = {
 };
 
 export type TemplateKey =
+  | 'dynamic-adaptive'
   | 'emergent-antigravity'
   | 'canva-designer'
   | 'ubuntu-desktop'
@@ -169,6 +171,11 @@ export function selectTemplateForPrompt(prompt: string): { key: TemplateKey; tem
     return { key: 'youtube-platform', template: youtubeTemplate };
   }
 
-  // 16. Cloud & Hosting: Vercel, Render, Hostinger, Microsoft, Chrome
+  // 16. Dynamic Adaptive Synthesis for custom prompts (Never repetitive!)
+  if (prompt && prompt.trim().length > 3) {
+    return { key: 'dynamic-adaptive', template: synthesizeDynamicApp(prompt) };
+  }
+
+  // 17. Empty / Generic Fallback
   return { key: 'nextjs-saas', template: saasTemplate };
 }

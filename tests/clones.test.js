@@ -64,3 +64,4 @@ test('NEXUS CLONER: Multi-Domain Workspace Templates & Recognition', async (t) =
     assert.strictEqual(selectTemplate('clone figma collaborative design tool'), 'figma-studio');
   });
 });
+
