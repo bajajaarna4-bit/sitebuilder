@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import {
   Sparkles,
   LayoutGrid,
+  Database,
   Cpu,
   Rocket,
   Sliders,
@@ -20,10 +21,11 @@ export function NavigationBar() {
   const links = [
     { href: '/autopilot', label: 'Autopilot', icon: Sparkles, highlight: true },
     { href: '/dashboard', label: 'Dashboard', icon: LayoutGrid },
-    { href: '/models', label: 'Model Control Center', icon: Cpu },
+    { href: '/database', label: 'Database', icon: Database },
+    { href: '/models', label: 'Models', icon: Cpu },
     { href: '/deployments', label: 'Deployments', icon: Rocket },
     { href: '/integrations', label: 'Integrations', icon: Layers },
-    { href: '/billing', label: 'Usage & Quotas', icon: CreditCard },
+    { href: '/billing', label: 'Usage', icon: CreditCard },
     { href: '/settings', label: 'Settings', icon: Sliders },
   ];
 

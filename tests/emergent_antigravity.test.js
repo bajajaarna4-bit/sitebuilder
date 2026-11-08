@@ -57,3 +57,4 @@ test('NEXUS OMNI: Emergent + Antigravity + Prompt Perfect + WhatsApp/Insta UI Re
     assert.ok(emergentFile.includes('AutoFixModal') && emergentFile.includes('Fix All Errors'), 'Must include Auto-Fix error healing engine');
   });
 });
+

@@ -991,3 +991,4 @@ CREATE TABLE IF NOT EXISTS public.omni_widgets (
 `,
   },
 };
+
