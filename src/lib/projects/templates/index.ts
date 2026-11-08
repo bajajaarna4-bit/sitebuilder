@@ -6,6 +6,7 @@ import { blinkitTemplate } from './blinkit';
 import { saasTemplate } from './saas';
 import { emergentAntigravityTemplate } from './emergent_antigravity';
 import { pokiClone } from './poki';
+import { googleAiNetflixTemplate } from './google_ai_netflix';
 import {
   spotifyClone,
   omegleClone,
@@ -40,6 +41,7 @@ export interface ProjectTemplate {
 }
 
 export const TEMPLATES: Record<string, ProjectTemplate> = {
+  'google-ai-netflix': googleAiNetflixTemplate,
   'poki-games': pokiClone,
   'uber-rapido-ola': uberRapidoOlaClone,
   'whatsapp-web': whatsappClone,
@@ -71,6 +73,7 @@ export const TEMPLATES: Record<string, ProjectTemplate> = {
 };
 
 export type TemplateKey =
+  | 'google-ai-netflix'
   | 'poki-games'
   | 'uber-rapido-ola'
   | 'whatsapp-web'
@@ -103,6 +106,23 @@ export type TemplateKey =
 
 export function selectTemplateForPrompt(prompt: string): { key: TemplateKey; template: ProjectTemplate } {
   const p = (prompt || '').toLowerCase().trim();
+
+  // 0. Google AI Studio & Netflix Cinema (Cinematic 4K Video Streaming & Animations)
+  if (
+    p.includes('google ai') ||
+    p.includes('deepmind') ||
+    (p.includes('google') && (p.includes('netflix') || p.includes('cinema') || p.includes('stream') || p.includes('movie') || p.includes('animation') || p.includes('animations') || p.includes('ai'))) ||
+    (p.includes('netflix') && (p.includes('google') || p.includes('ai') || p.includes('workspace') || p.includes('animation') || p.includes('animations') || p.includes('vedio') || p.includes('video'))) ||
+    p.includes('animations please') ||
+    p.includes('vedios and animations') ||
+    p.includes('videos and animations') ||
+    p.includes('include vedios') ||
+    p.includes('include videos') ||
+    p.includes('cinema') ||
+    (p.includes('netflix') && !p.includes('disney') && !p.includes('hotstar'))
+  ) {
+    return { key: 'google-ai-netflix', template: googleAiNetflixTemplate };
+  }
 
   // 1. Poki, Subway Surfer & Playable Arcade Games
   if (
@@ -218,8 +238,20 @@ export function selectTemplateForPrompt(prompt: string): { key: TemplateKey; tem
     return { key: 'github-dev', template: githubClone };
   }
 
-  // 20. Google Search & Google Maps
-  if (p.includes('google maps') || p.includes('google') || p.includes('map') || p.includes('navigation') || p.includes('route') || p.includes('search engine')) {
+  // 20. Google Search & Google Maps (Restricted to search engine queries, never AI or Cinema)
+  if (
+    (p.includes('google maps') ||
+      p.includes('google search') ||
+      p.includes('search engine') ||
+      p.includes('google web') ||
+      p === 'google' ||
+      p === 'google.com') &&
+    !p.includes('google ai') &&
+    !p.includes('netflix') &&
+    !p.includes('animation') &&
+    !p.includes('vedio') &&
+    !p.includes('video')
+  ) {
     return { key: 'google-search', template: googleClone };
   }
 

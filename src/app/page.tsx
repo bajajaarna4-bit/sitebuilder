@@ -28,6 +28,7 @@ export default function MarketingPage() {
   const [heroPrompt, setHeroPrompt] = useState('');
 
   const PROMPT_SUGGESTIONS = [
+    { label: 'Google AI & Netflix Cinema', prompt: 'Build a premium Google AI Studio and Netflix Cinema streaming platform with 4K video playback, category carousels, and multilingual voice' },
     { label: 'Subway Surfers 3D Runner', prompt: 'Build a premium Subway Surfers 3D endless runner game with real-time controls' },
     { label: 'Uber + Rapido + Ola Transit', prompt: 'Build OmniRide unified ride-hailing with bike taxi, auto, and sedan fare compare' },
     { label: 'WhatsApp Web Messaging', prompt: 'Build WhatsApp Web clone with real-time chats, audio notes, and video calls' },
@@ -198,32 +199,57 @@ export default function MarketingPage() {
                 </div>
               </div>
 
-              {/* Right Live Application Interactive Preview */}
-              <div className="md:col-span-8 p-6 text-left flex flex-col justify-between bg-[#0b0e14]">
+              {/* Right Live Application Interactive Preview & Cinematic Video Showcase */}
+              <div className="md:col-span-8 p-4 md:p-6 text-left flex flex-col justify-between bg-[#07090e]">
                 <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
                   <div className="flex items-center space-x-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                    <span className="text-xs font-extrabold text-white">Interactive Preview Canvas</span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
+                    <span className="text-xs font-black text-white tracking-wider uppercase">STREAMFLIX • 4K AI Showcase</span>
                   </div>
-                  <div className="flex items-center space-x-1.5 bg-zinc-900 px-2.5 py-1 rounded-lg border border-white/[0.06] text-[11px] font-mono text-zinc-300">
-                    <span>localhost:3000/preview</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="px-2 py-0.5 rounded-full bg-red-600/20 text-red-400 border border-red-500/30 text-[10px] font-mono font-bold">
+                      LIVE STREAM
+                    </span>
+                    <span className="text-[11px] font-mono text-zinc-400">60 FPS</span>
                   </div>
                 </div>
 
-                {/* Visual Preview Graphic */}
-                <div className="my-auto py-8 text-center space-y-3">
-                  <div className="inline-flex p-4 rounded-2xl bg-gradient-to-tr from-cyan-500/20 via-blue-500/20 to-indigo-500/20 border border-cyan-500/30 text-3xl">
-                    ⚡
+                {/* Embedded Auto-Playing Cinematic Video Reel with Live Controls */}
+                <div className="relative my-3 rounded-xl overflow-hidden bg-black border border-white/[0.08] shadow-2xl group aspect-video flex items-center justify-center">
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover filter brightness-95 group-hover:scale-105 transition-transform duration-700"
+                    src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
+
+                  {/* Floating Cinematic Overlay */}
+                  <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between pointer-events-none">
+                    <div className="space-y-0.5">
+                      <span className="px-2 py-0.5 rounded bg-red-600 text-white text-[9px] font-black uppercase tracking-wider">
+                        Google AI Original
+                      </span>
+                      <h4 className="text-sm font-black text-white drop-shadow">DeepMind: Synthetic Consciousness</h4>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-lg bg-white/20 backdrop-blur-md text-white text-[11px] font-mono font-bold">
+                      ▶ 4K HDR
+                    </span>
                   </div>
-                  <h3 className="font-bold text-base text-white">Full-Stack Synthesis in Real-Time</h3>
-                  <p className="text-xs text-zinc-400 max-w-md mx-auto">
-                    Turn natural language instructions into high-performance applications with live responsive rendering, integrated database persistence, and zero boilerplate.
-                  </p>
                 </div>
 
-                <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs text-zinc-500 font-mono">
-                  <span>LATENCY: 14ms</span>
-                  <span>ISOLATED SANDBOX ACTIVE</span>
+                <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs text-zinc-400 font-mono">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-emerald-400">● 100% Zero-Latency Render</span>
+                  </div>
+                  <Link
+                    href="/studio/proj_cinema_01?prompt=Build%20a%20premium%20Google%20AI%20Studio%20and%20Netflix%20Cinema%20streaming%20platform"
+                    className="text-cyan-400 hover:text-cyan-300 font-bold transition flex items-center space-x-1"
+                  >
+                    <span>Launch Full Cinema Suite →</span>
+                  </Link>
                 </div>
               </div>
             </div>

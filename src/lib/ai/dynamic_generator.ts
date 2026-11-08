@@ -1,4 +1,5 @@
 import { ProjectTemplate } from '../projects/templates';
+import { googleAiNetflixTemplate } from '../projects/templates/google_ai_netflix';
 
 /**
  * Dynamic Adaptive Application Synthesizer.
@@ -10,6 +11,22 @@ export function synthesizeDynamicApp(prompt: string): ProjectTemplate {
   const p = prompt.trim();
   const lower = p.toLowerCase();
   const safePromptEscaped = JSON.stringify(prompt);
+
+  // 0. CINEMA, NETFLIX, GOOGLE AI, VIDEOS & ANIMATIONS
+  if (
+    lower.includes('cinema') ||
+    lower.includes('netflix') ||
+    lower.includes('google ai') ||
+    lower.includes('deepmind') ||
+    lower.includes('vedio') ||
+    lower.includes('video') ||
+    lower.includes('animation') ||
+    lower.includes('animations') ||
+    lower.includes('streamflix') ||
+    lower.includes('movie')
+  ) {
+    return googleAiNetflixTemplate;
+  }
 
   // 1. GAME & ARCADE SYNTHESIS (Subway Surfer, Runner, Poki, Arcade, Playable Games)
   if (

@@ -120,9 +120,10 @@ function StudioWorkspaceContent() {
     // 2. Check projectId keywords
     if (!resolvedTemplate && projectId) {
       const pId = projectId.toLowerCase();
-      if (pId.includes('amazon')) resolvedTemplate = TEMPLATES['amazon-commerce'];
+      if (pId.includes('cinema') || pId.includes('google_ai') || pId.includes('google-ai') || pId.includes('streamflix')) resolvedTemplate = TEMPLATES['google-ai-netflix'];
+      else if (pId.includes('amazon')) resolvedTemplate = TEMPLATES['amazon-commerce'];
       else if (pId.includes('instagram')) resolvedTemplate = TEMPLATES['instagram-social'];
-      else if (pId.includes('netflix')) resolvedTemplate = TEMPLATES['netflix-streaming'];
+      else if (pId.includes('netflix')) resolvedTemplate = TEMPLATES['google-ai-netflix'];
       else if (pId.includes('poki') || pId.includes('subway') || pId.includes('game')) resolvedTemplate = TEMPLATES['poki-games'];
       else if (pId.includes('uber') || pId.includes('rapido') || pId.includes('ola') || pId.includes('omniride') || pId.includes('transit')) resolvedTemplate = TEMPLATES['uber-rapido-ola'];
       else if (pId.includes('whatsapp')) resolvedTemplate = TEMPLATES['whatsapp-web'];
@@ -962,10 +963,10 @@ function StudioWorkspaceContent() {
             {/* Quick Prompt Suggestion Pills */}
             <div className="flex flex-wrap gap-1">
               {[
-                'Add sound effects & particles',
+                'Google AI & Netflix Cinema with 4K Video',
+                'Multilingual Voice (EN/HI/KO/ZH/SA)',
+                'Subway Surfers 3D Runner with Keyboard Controls',
                 'Refactor with dark glass theme',
-                'Add local storage persistence',
-                'Fix all errors & verify',
               ].map((sug) => (
                 <button
                   key={sug}

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { MultilingualVoiceGuide } from '@/components/guidance/MultilingualVoiceGuide';
 import {
   Sparkles,
   LayoutGrid,
@@ -85,6 +86,9 @@ export function NavigationBar() {
 
         {/* Right Status & Actions */}
         <div className="flex items-center space-x-3">
+          {/* Multilingual Voice & Visual Guide Pill */}
+          <MultilingualVoiceGuide />
+
           {/* Subtle Live Engine Pills */}
           <div className="hidden lg:flex items-center space-x-2 px-2.5 py-1 rounded-full bg-white/[0.02] border border-white/[0.06] text-[11px] font-mono text-zinc-400">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
