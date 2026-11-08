@@ -4,6 +4,19 @@ const assert = require('node:assert');
 test('E2E Autonomous Journey: Natural Language to Full-Stack Application', async (t) => {
   function selectTemplateForPrompt(prompt) {
     const p = prompt.toLowerCase();
+    if (
+      p.includes('emergent') ||
+      p.includes('antigravity') ||
+      p.includes('prompt perfect') ||
+      p.includes('whatsapp') ||
+      (p.includes('insta') && (p.includes('mix') || p.includes('build') || p.includes('chat') || p.includes('whatsapp'))) ||
+      p.includes('build further') ||
+      p.includes('fix all errors') ||
+      p.includes('fix all bugs') ||
+      p.includes('omni')
+    ) {
+      return { key: 'emergent-antigravity', name: 'NEXUS Omni' };
+    }
     if (p.includes('netflix') || p.includes('stream') || p.includes('movie')) {
       return { key: 'netflix-streaming', name: 'StreamFlix' };
     }
@@ -21,6 +34,12 @@ test('E2E Autonomous Journey: Natural Language to Full-Stack Application', async
     }
     return { key: 'nextjs-saas', name: 'NexusFlow' };
   }
+
+  await t.test('resolves Emergent & Antigravity hybrid from prompt', () => {
+    const result = selectTemplateForPrompt('build a website that os mix of emergent antigravity prompt perfect and whatsapp insta like ui also can actually build further fix all errors and bugs');
+    assert.strictEqual(result.key, 'emergent-antigravity');
+    assert.strictEqual(result.name, 'NEXUS Omni');
+  });
 
   await t.test('resolves Netflix streaming platform from prompt', () => {
     const result = selectTemplateForPrompt('Build a premium Netflix-like streaming platform');
