@@ -674,23 +674,28 @@ function StudioWorkspaceContent() {
 
         {/* ================= CENTER PANEL: Preview & Code ================= */}
         <main className="flex-1 flex flex-col bg-surface-950 overflow-hidden relative">
-          <div className="flex-1 flex overflow-hidden">
+          {/* Ambient Studio Backlights & Mesh */}
+          <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-950/20 via-transparent to-transparent z-0" />
+          <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[320px] bg-cyan-500/[0.05] blur-[140px] pointer-events-none rounded-full z-0" />
+
+          <div className="flex-1 flex overflow-hidden relative z-10">
             {/* Live Preview Iframe */}
             {(centerMode === 'preview' || centerMode === 'split') && (
-              <div className="flex-1 bg-[#090b0e] flex flex-col items-center justify-center p-3 relative overflow-hidden border-r border-white/[0.08]">
-                <div className={`h-full ${viewportWidthClass} bg-black rounded-2xl overflow-hidden border border-white/[0.1] shadow-2xl relative transition-all duration-300 flex flex-col`}>
-                  {/* Browser Chrome Header */}
-                  <div className="h-8 bg-zinc-900/90 border-b border-white/[0.06] px-3 flex items-center justify-between text-xs font-mono select-none flex-none">
+              <div className="flex-1 bg-[#090b0e]/95 flex flex-col items-center justify-center p-3 relative overflow-hidden border-r border-white/[0.08]">
+                <div className={`h-full ${viewportWidthClass} bg-black rounded-2xl overflow-hidden border border-white/[0.12] shadow-2xl shadow-cyan-500/5 relative transition-all duration-500 ease-out flex flex-col`}>
+                  {/* Browser Chrome Header with Pulse Indicator */}
+                  <div className="h-8 bg-zinc-900/95 border-b border-white/[0.08] px-3.5 flex items-center justify-between text-xs font-mono select-none flex-none backdrop-blur-md">
                     <div className="flex items-center space-x-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-                      <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
-                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-red-500/80 hover:brightness-125 transition" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80 hover:brightness-125 transition" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 hover:brightness-125 transition" />
                     </div>
-                    <div className="flex-1 max-w-xs mx-auto bg-black/60 border border-white/[0.06] rounded-full px-3 py-0.5 text-center text-[10px] text-zinc-400 truncate">
-                      🔒 localhost:3000/app
+                    <div className="flex-1 max-w-xs mx-auto bg-black/70 border border-white/[0.08] rounded-full px-3 py-0.5 text-center text-[10px] text-zinc-300 truncate flex items-center justify-center space-x-1.5 shadow-inner">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                      <span>localhost:3000/app</span>
                     </div>
                     <div className="flex items-center space-x-2 text-zinc-400">
-                      <button onClick={refreshPreview} className="hover:text-white transition" title="Reload Frame">
+                      <button onClick={refreshPreview} className="hover:text-cyan-400 transition hover:rotate-180 duration-500" title="Reload Frame">
                         <RotateCw className="w-3 h-3" />
                       </button>
                     </div>
@@ -888,42 +893,101 @@ function StudioWorkspaceContent() {
         <aside className="w-80 border-l border-zinc-800/80 bg-surface-950 flex flex-col flex-none">
           <div className="p-3 border-b border-zinc-800/80 flex items-center justify-between text-xs font-bold text-zinc-300">
             <div className="flex items-center space-x-2">
-              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+              <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-spin" style={{ animationDuration: '6s' }} />
               <span>Agent Orchestrator</span>
             </div>
-            <span className="text-[10px] font-mono text-cyan-400 font-bold">{progressPercent}%</span>
+            {/* Animated Audio/Event Waveform */}
+            <div className="flex items-center space-x-2">
+              {isGenerating ? (
+                <div className="flex items-center space-x-0.5">
+                  <span className="w-0.5 h-3 bg-cyan-400 animate-pulse" />
+                  <span className="w-0.5 h-4 bg-cyan-300 animate-pulse" style={{ animationDelay: '150ms' }} />
+                  <span className="w-0.5 h-2 bg-blue-400 animate-pulse" style={{ animationDelay: '300ms' }} />
+                  <span className="w-0.5 h-4 bg-indigo-400 animate-pulse" style={{ animationDelay: '450ms' }} />
+                </div>
+              ) : null}
+              <span className="text-[10px] font-mono text-cyan-400 font-bold">{progressPercent}%</span>
+            </div>
           </div>
 
           <div className="w-full bg-zinc-900 h-1">
             <div
-              className="bg-gradient-to-r from-cyan-500 to-blue-600 h-1 transition-all duration-300"
+              className={`bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600 h-1 transition-all duration-300 ${
+                isGenerating ? 'animate-pulse' : ''
+              }`}
               style={{ width: `${progressPercent}%` }}
             />
           </div>
 
           <div className="flex-1 overflow-y-auto p-3 space-y-3">
-            <div className="bg-surface-900/70 border border-zinc-800/80 rounded-xl p-3 space-y-2">
+            {/* Active Stage Card with Visual Glow */}
+            <div className={`rounded-xl p-3 space-y-2 border transition-all duration-300 ${
+              isGenerating
+                ? 'bg-cyan-950/30 border-cyan-500/50 shadow-lg shadow-cyan-500/10'
+                : 'bg-surface-900/70 border-zinc-800/80'
+            }`}>
               <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-white">Active Stage</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-cyan-300">
+                <div className="flex items-center space-x-1.5">
+                  <span className={`w-2 h-2 rounded-full ${isGenerating ? 'bg-cyan-400 animate-ping' : 'bg-emerald-400'}`} />
+                  <span className="font-semibold text-white">Active Stage</span>
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-cyan-300 border border-white/[0.06]">
                   {orchestrationStatus}
                 </span>
               </div>
-              <p className="text-xs text-zinc-400 leading-relaxed">
+              <p className="text-xs text-zinc-300 leading-relaxed font-mono">
                 {activeTask?.title || 'System ready. Submit an instruction to trigger the 10-agent orchestration sequence.'}
               </p>
             </div>
 
+            {/* Visual 10-Agent Swarm Pipeline */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+                <span>Autonomous Pipeline</span>
+                <span className="text-cyan-400">10 Specialists</span>
+              </div>
+              <div className="grid grid-cols-5 gap-1 text-[9px] font-mono">
+                {[
+                  { role: 'planner', icon: '📋' },
+                  { role: 'designer', icon: '🎨' },
+                  { role: 'database', icon: '🗄️' },
+                  { role: 'frontend', icon: '💻' },
+                  { role: 'backend', icon: '⚡' },
+                  { role: 'security', icon: '🛡️' },
+                  { role: 'tester', icon: '🧪' },
+                  { role: 'debugger', icon: '🐞' },
+                  { role: 'deployer', icon: '🚀' },
+                  { role: 'verifier', icon: '✓' },
+                ].map((spec) => {
+                  const isDone = agentTasks.some((t) => t.agentRole === spec.role);
+                  return (
+                    <div
+                      key={spec.role}
+                      className={`p-1.5 rounded-lg border text-center transition-all ${
+                        isDone
+                          ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300'
+                          : 'bg-zinc-900/60 border-white/[0.04] text-zinc-500'
+                      }`}
+                      title={spec.role}
+                    >
+                      <div>{spec.icon}</div>
+                      <div className="truncate capitalize text-[8px]">{spec.role.slice(0, 4)}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
             <div className="space-y-2">
               <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Task Log</span>
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 max-h-52 overflow-y-auto pr-1">
                 {agentTasks.map((t) => (
-                  <div key={t.id} className="p-2 bg-surface-900/40 border border-zinc-800/60 rounded-lg text-xs space-y-1">
+                  <div key={t.id} className="p-2 bg-surface-900/40 border border-zinc-800/60 rounded-lg text-xs space-y-1 hover:border-cyan-500/40 transition">
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-[11px] text-zinc-200 capitalize">{t.agentRole}</span>
                       <span className="text-[10px] text-emerald-400 font-mono">DONE ✓</span>
                     </div>
-                    <p className="text-[11px] text-zinc-400">{t.title}</p>
+                    <p className="text-[11px] text-zinc-400 font-mono line-clamp-1">{t.title}</p>
                   </div>
                 ))}
               </div>

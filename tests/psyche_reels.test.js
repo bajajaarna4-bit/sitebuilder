@@ -64,3 +64,4 @@ test('PSYCHE REELS: Short-Form Video Stream & Psychological Mindset Profiler', a
     assert.strictEqual(route('what type of person are you based on reels'), 'psyche-reels');
   });
 });
+
