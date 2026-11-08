@@ -356,11 +356,10 @@ export default function AutopilotPage() {
               <button
                 onClick={() => startAutopilot()}
                 disabled={isRunning || !prompt.trim()}
-                className={`px-6 py-2.5 rounded-xl font-bold text-xs sm:text-sm shadow-xl flex items-center space-x-2 transition ${
-                  isRunning
+                className={`px-6 py-2.5 rounded-xl font-bold text-xs sm:text-sm shadow-xl flex items-center space-x-2 transition ${isRunning
                     ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
                     : 'bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-cyan-500/20 active:scale-95'
-                }`}
+                  }`}
               >
                 {isRunning ? (
                   <>
@@ -427,13 +426,12 @@ export default function AutopilotPage() {
                 return (
                   <div
                     key={stage.id}
-                    className={`relative p-3.5 rounded-xl border transition-all ${
-                      isCurrent
+                    className={`relative p-3.5 rounded-xl border transition-all ${isCurrent
                         ? 'bg-cyan-950/20 border-cyan-500/70 shadow-lg shadow-cyan-500/5 ring-1 ring-cyan-500/30'
                         : isCompleted
-                        ? 'bg-zinc-950/60 border-emerald-500/30 hover:border-emerald-500/50'
-                        : 'bg-zinc-950/40 border-zinc-800/50 opacity-60'
-                    }`}
+                          ? 'bg-zinc-950/60 border-emerald-500/30 hover:border-emerald-500/50'
+                          : 'bg-zinc-950/40 border-zinc-800/50 opacity-60'
+                      }`}
                   >
                     <div className="flex items-start space-x-3">
                       {/* Step Status Icon */}
@@ -457,9 +455,8 @@ export default function AutopilotPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
                           <h3
-                            className={`text-xs sm:text-sm font-bold ${
-                              isCurrent ? 'text-cyan-300' : isCompleted ? 'text-zinc-200' : 'text-zinc-400'
-                            }`}
+                            className={`text-xs sm:text-sm font-bold ${isCurrent ? 'text-cyan-300' : isCompleted ? 'text-zinc-200' : 'text-zinc-400'
+                              }`}
                           >
                             {stage.id}. {stage.title}
                           </h3>
@@ -518,11 +515,10 @@ export default function AutopilotPage() {
               <div className="flex items-center space-x-1 sm:space-x-2">
                 <button
                   onClick={() => setActiveTab('preview')}
-                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-                    activeTab === 'preview'
+                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition ${activeTab === 'preview'
                       ? 'bg-zinc-800 text-cyan-400 border border-zinc-700 shadow-sm'
                       : 'text-zinc-400 hover:text-white'
-                  }`}
+                    }`}
                 >
                   <Eye className="w-3.5 h-3.5" />
                   <span>Live Preview</span>
@@ -533,11 +529,10 @@ export default function AutopilotPage() {
 
                 <button
                   onClick={() => setActiveTab('code')}
-                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-                    activeTab === 'code'
+                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition ${activeTab === 'code'
                       ? 'bg-zinc-800 text-cyan-400 border border-zinc-700 shadow-sm'
                       : 'text-zinc-400 hover:text-white'
-                  }`}
+                    }`}
                 >
                   <Code2 className="w-3.5 h-3.5" />
                   <span>Generated Code</span>
@@ -548,11 +543,10 @@ export default function AutopilotPage() {
 
                 <button
                   onClick={() => setActiveTab('logs')}
-                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-                    activeTab === 'logs'
+                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition ${activeTab === 'logs'
                       ? 'bg-zinc-800 text-cyan-400 border border-zinc-700 shadow-sm'
                       : 'text-zinc-400 hover:text-white'
-                  }`}
+                    }`}
                 >
                   <Terminal className="w-3.5 h-3.5" />
                   <span>Autopilot Logs</span>
@@ -560,11 +554,10 @@ export default function AutopilotPage() {
 
                 <button
                   onClick={() => setActiveTab('database')}
-                  className={`hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-                    activeTab === 'database'
+                  className={`hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition ${activeTab === 'database'
                       ? 'bg-zinc-800 text-cyan-400 border border-zinc-700 shadow-sm'
                       : 'text-zinc-400 hover:text-white'
-                  }`}
+                    }`}
                 >
                   <Database className="w-3.5 h-3.5" />
                   <span>Database & APIs</span>
@@ -640,11 +633,10 @@ export default function AutopilotPage() {
                           <button
                             key={f.path}
                             onClick={() => setActiveCodeFile(f.path)}
-                            className={`px-3 py-1 rounded-md text-xs font-mono transition shrink-0 ${
-                              activeCodeFile === f.path
+                            className={`px-3 py-1 rounded-md text-xs font-mono transition shrink-0 ${activeCodeFile === f.path
                                 ? 'bg-zinc-800 text-cyan-400 border border-zinc-700'
                                 : 'text-zinc-500 hover:text-zinc-300'
-                            }`}
+                              }`}
                           >
                             {f.name}
                           </button>
@@ -677,15 +669,14 @@ export default function AutopilotPage() {
                       terminalLogs.map((log, idx) => (
                         <div
                           key={idx}
-                          className={`${
-                            log.includes('PASSED') || log.includes('VERIFIED') || log.includes('✓')
+                          className={`${log.includes('PASSED') || log.includes('VERIFIED') || log.includes('✓')
                               ? 'text-emerald-400'
                               : log.includes('STAGE')
-                              ? 'text-cyan-400 font-bold pt-2'
-                              : log.includes('Error')
-                              ? 'text-rose-400'
-                              : 'text-zinc-400'
-                          }`}
+                                ? 'text-cyan-400 font-bold pt-2'
+                                : log.includes('Error')
+                                  ? 'text-rose-400'
+                                  : 'text-zinc-400'
+                            }`}
                         >
                           {log}
                         </div>
@@ -713,7 +704,7 @@ export default function AutopilotPage() {
                     </div>
                     <div className="p-4 bg-zinc-900 border border-zinc-800 rounded-xl font-mono text-xs text-zinc-300 overflow-x-auto">
                       <pre className="whitespace-pre">
-{`-- NEXUS AUTOPILOT GENERATED SCHEMA FOR STREAMFLIX PRO
+                        {`-- NEXUS AUTOPILOT GENERATED SCHEMA FOR STREAMFLIX PRO
 CREATE TABLE IF NOT EXISTS streamflix_users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email TEXT UNIQUE NOT NULL,

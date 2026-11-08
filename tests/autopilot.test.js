@@ -91,5 +91,7 @@ test('NEXUS AUTOPILOT: Streaming Platform Synthesis & 7-Stage Verification', asy
     assert.ok(bundlerContent.includes('React.useState'), 'Bundler must inject unpacked useState hook');
     assert.ok(bundlerContent.includes('React.useEffect'), 'Bundler must inject unpacked useEffect hook');
     assert.ok(bundlerContent.includes('Babel.transform'), 'Bundler must invoke Babel compiler');
+    assert.ok(bundlerContent.includes('window.useState = React.useState'), 'Must attach useState to window');
+    assert.ok(bundlerContent.includes('!f.path.includes(\'/api/\')'), 'Must exclude /api/ routes from browser preview bundle');
   });
 });

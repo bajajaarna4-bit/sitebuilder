@@ -17,12 +17,17 @@ export function buildPreviewHtml(files: ProjectFile[], activeRoute = '/'): strin
   );
 
   // Filter and sort component files so data models are declared first, then components
+  // Strictly exclude API routes, migrations, markdown, tests, and server files from browser preview
   const componentFiles = files
     .filter(
       (f) =>
         !f.isDirectory &&
         (f.path.endsWith('.tsx') || f.path.endsWith('.ts') || f.path.endsWith('.jsx') || f.path.endsWith('.js')) &&
-        f.path !== appFile?.path
+        f.path !== appFile?.path &&
+        !f.path.includes('/api/') &&
+        !f.path.startsWith('/tests/') &&
+        !f.path.includes('.test.') &&
+        !f.path.includes('.spec.')
     )
     .sort((a, b) => {
       // Prioritize data/ and types/ before components/
@@ -38,15 +43,20 @@ export function buildPreviewHtml(files: ProjectFile[], activeRoute = '/'): strin
       // Remove multi-line and single-line imports
       .replace(/import\s+[\s\S]*?from\s+['"][^'"]*?['"];?/g, '')
       .replace(/import\s+['"][^'"]*?['"];?/g, '')
+      // Remove export * from ...
+      .replace(/export\s+\*\s+from\s+['"][^'"]*?['"];?/g, '')
       // Replace default export functions and classes
-      .replace(/export\s+default\s+function\s+([A-Za-z0-9_]+)/g, 'function $1')
-      .replace(/export\s+default\s+class\s+([A-Za-z0-9_]+)/g, 'class $1')
-      // Remove export default variable declarations
+      .replace(/export\s+default\s+async\s+function\s*([A-Za-z0-9_]*)/g, 'async function $1')
+      .replace(/export\s+default\s+function\s*([A-Za-z0-9_]*)/g, 'function $1')
+      .replace(/export\s+default\s+class\s*([A-Za-z0-9_]*)/g, 'class $1')
+      // Remove export default followed by identifier, expression, or arrow
       .replace(/export\s+default\s+/g, '')
-      // Remove named export keywords while preserving declarations
-      .replace(/export\s+(const|let|var|function|class|interface|type)\s+/g, '$1 ')
+      // Remove named export keywords (with optional async)
+      .replace(/export\s+(async\s+)?(const|let|var|function|class|interface|type|enum)\s+/g, '$1$2 ')
       // Remove export { ... } blocks
       .replace(/export\s*\{[\s\S]*?\};?/g, '')
+      // Catch any remaining standalone 'export ' keywords
+      .replace(/\bexport\s+/g, '')
       .trim();
   }
 
@@ -207,6 +217,17 @@ export function buildPreviewHtml(files: ProjectFile[], activeRoute = '/'): strin
 
         if (typeof Babel === 'undefined') {
           throw new Error('Babel compiler failed to load from CDN. Check your internet connection.');
+        }
+
+        // Expose React hooks globally on window so any component or helper function can access them
+        if (typeof React !== 'undefined') {
+          window.useState = React.useState;
+          window.useEffect = React.useEffect;
+          window.useMemo = React.useMemo;
+          window.useCallback = React.useCallback;
+          window.useRef = React.useRef;
+          window.createContext = React.createContext;
+          window.useContext = React.useContext;
         }
 
         // Compile TSX/JSX source using Babel Standalone
