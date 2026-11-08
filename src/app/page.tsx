@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { NavigationBar } from '@/components/navigation/Navbar';
 import {
   Sparkles,
@@ -17,174 +18,257 @@ import {
   Smartphone,
   Tablet,
   Check,
+  Database,
+  Workflow,
+  Zap,
 } from 'lucide-react';
 
 export default function MarketingPage() {
-  const lifecycleSteps = [
-    { title: 'IDEA', desc: 'Natural language prompt' },
-    { title: 'PLAN', desc: 'Spec & acceptance criteria' },
-    { title: 'DESIGN', desc: 'Theme & responsive tokens' },
-    { title: 'CODE', desc: 'React 19 & TypeScript' },
-    { title: 'EXECUTE', desc: 'Isolated sandbox runner' },
-    { title: 'TEST', desc: 'DOM assertion checks' },
-    { title: 'DEBUG', desc: 'Zero runtime exceptions' },
-    { title: 'DEPLOY', desc: 'Production live hosting' },
+  const router = useRouter();
+  const [heroPrompt, setHeroPrompt] = useState('');
+
+  const PROMPT_SUGGESTIONS = [
+    { label: 'Subway Surfers 3D Runner', prompt: 'Build a premium Subway Surfers 3D endless runner game with real-time controls' },
+    { label: 'Uber + Rapido + Ola Transit', prompt: 'Build OmniRide unified ride-hailing with bike taxi, auto, and sedan fare compare' },
+    { label: 'WhatsApp Web Messaging', prompt: 'Build WhatsApp Web clone with real-time chats, audio notes, and video calls' },
+    { label: 'Claude 3.5 Sonnet Studio', prompt: 'Build an interactive Claude AI workspace with side-by-side Artifacts preview' },
+    { label: 'Canva Design Studio', prompt: 'Build a Canva graphic design editor with artboards, text shapes, and export' },
+    { label: 'Ubuntu 24.04 LTS OS', prompt: 'Build an Ubuntu Linux desktop simulator with Bash terminal and Neofetch' },
   ];
 
-  const agentRoles = [
-    { name: 'Product Planner', role: 'Architects specifications and pages' },
-    { name: 'UI/UX Designer', role: 'Synthesizes layouts & color tokens' },
-    { name: 'Frontend Developer', role: 'Builds interactive React components' },
-    { name: 'Backend Developer', role: 'Engineers APIs and data handlers' },
-    { name: 'Database Engineer', role: 'Creates PostgreSQL & RLS schemas' },
-    { name: 'Debugging Engineer', role: 'Diagnoses runtime errors & traces' },
-    { name: 'Testing Engineer', role: 'Validates viewport DOM assertions' },
-    { name: 'Security Engineer', role: 'Guards sandboxes & client boundaries' },
-    { name: 'Performance Engineer', role: 'Optimizes latency & layout shifts' },
-    { name: 'Deployment Engineer', role: 'Publishes production build artifacts' },
-  ];
+  const handleLaunchPrompt = (e: React.FormEvent) => {
+    e.preventDefault();
+    const finalPrompt = heroPrompt.trim() || 'Build a premium Subway Surfers 3D endless runner game with real-time controls';
+    const projId = `proj_${Date.now()}`;
+    router.push(`/studio/${projId}?prompt=${encodeURIComponent(finalPrompt)}`);
+  };
 
-  const showcaseTemplates = [
-    { name: 'Netflix Clone', prompt: 'Build a premium Netflix-like streaming platform', cat: 'Media Streaming' },
-    { name: 'Instagram Social', prompt: 'Create a full Instagram-style social application', cat: 'Social Platform' },
-    { name: 'Amazon E-Commerce', prompt: 'Build a modern Amazon-style e-commerce store', cat: 'E-Commerce' },
-    { name: 'YouTube Video App', prompt: 'Create a YouTube-style video-sharing application', cat: 'Video & Community' },
-    { name: 'Blinkit Quick-Commerce', prompt: 'Build a Blinkit-style quick-commerce application', cat: '10-Min Delivery' },
-  ];
+  const handleSelectSuggestion = (p: string) => {
+    const projId = `proj_${Date.now()}`;
+    router.push(`/studio/${projId}?prompt=${encodeURIComponent(p)}`);
+  };
 
   return (
-    <div className="min-h-screen bg-surface-950 text-zinc-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#07090d] text-zinc-100 flex flex-col font-sans selection:bg-cyan-500/20 selection:text-cyan-200 overflow-x-hidden">
       <NavigationBar />
 
+      {/* Atmospheric Background Glows */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[550px] bg-gradient-to-b from-cyan-500/10 via-blue-600/5 to-transparent blur-[140px]" />
+        <div className="absolute top-[600px] -left-48 w-96 h-96 bg-indigo-500/5 blur-[120px]" />
+        <div className="absolute top-[800px] -right-48 w-96 h-96 bg-cyan-500/5 blur-[120px]" />
+      </div>
+
       {/* Hero Section */}
-      <section className="relative px-6 pt-20 pb-16 max-w-6xl mx-auto text-center space-y-8">
-        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-800/50 text-cyan-300 text-xs font-mono">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>AUTONOMOUS MULTI-AGENT PLATFORM 2.0</span>
+      <section className="relative z-10 px-6 pt-24 pb-20 max-w-5xl mx-auto text-center space-y-8">
+        {/* Subtle pill tag */}
+        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.08] text-xs font-mono text-zinc-300 shadow-sm backdrop-blur-md">
+          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+          <span className="text-zinc-200 font-semibold tracking-wide">NEXUS AI 2.0</span>
+          <span className="text-zinc-500">•</span>
+          <span className="text-zinc-400">Autonomous Multi-Agent Engine</span>
         </div>
 
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.1] max-w-4xl mx-auto">
-          From an idea to a fully functional application.{' '}
-          <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-400 bg-clip-text text-transparent">
-            Designed, developed, tested, and deployed by AI.
-          </span>
-        </h1>
+        {/* Primary Editorial Headline */}
+        <div className="space-y-4 max-w-4xl mx-auto">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white leading-[1.08]">
+            Your imagination.{' '}
+            <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-300 bg-clip-text text-transparent">
+              Our intelligence.
+            </span>{' '}
+            Infinite possibilities.
+          </h1>
 
-        <p className="text-zinc-400 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-          NEXUS AI orchestrates 10 specialized autonomous AI agents to turn natural language instructions into real full-stack web applications with live preview, Monaco code editing, and database generation.
-        </p>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-          <Link
-            href="/dashboard"
-            className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-sm rounded-xl transition flex items-center justify-center space-x-2 shadow-xl shadow-cyan-500/20 active:scale-95"
-          >
-            <Sparkles className="w-4 h-4 text-cyan-200" />
-            <span>Launch NEXUS Studio</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-          <Link
-            href="/models"
-            className="w-full sm:w-auto px-6 py-3.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white font-semibold text-sm rounded-xl transition border border-zinc-800 flex items-center justify-center space-x-2"
-          >
-            <Cpu className="w-4 h-4 text-cyan-400" />
-            <span>Model Control Center</span>
-          </Link>
+          <p className="text-zinc-400 text-base sm:text-xl max-w-2xl mx-auto leading-relaxed font-normal">
+            Build stunning websites and powerful applications by simply describing your ideas.
+          </p>
         </div>
 
-        {/* 8-Stage Lifecycle Visualization */}
-        <div className="pt-12">
-          <div className="text-[11px] font-mono tracking-widest text-zinc-500 uppercase mb-4">
-            Autonomous Engineering Lifecycle
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 bg-surface-900/60 p-3 rounded-2xl border border-zinc-800/80 backdrop-blur">
-            {lifecycleSteps.map((step, idx) => (
-              <div
-                key={step.title}
-                className="p-3 bg-surface-950/80 border border-zinc-800/60 rounded-xl flex flex-col items-center justify-center text-center space-y-1 hover:border-cyan-500/40 transition"
-              >
-                <span className="text-[10px] font-mono font-bold text-cyan-400">{`0${idx + 1}`}</span>
-                <span className="font-extrabold text-xs text-white tracking-wider">{step.title}</span>
-                <span className="text-[10px] text-zinc-400 line-clamp-1">{step.desc}</span>
+        {/* Central Intelligent Prompt Composer */}
+        <div className="max-w-2xl mx-auto pt-2">
+          <form
+            onSubmit={handleLaunchPrompt}
+            className="relative bg-zinc-950/90 border border-white/[0.1] hover:border-cyan-500/40 focus-within:border-cyan-500 focus-within:ring-2 focus-within:ring-cyan-500/20 rounded-2xl p-2 shadow-2xl backdrop-blur-xl transition-all duration-200"
+          >
+            <div className="flex items-center px-3 pt-2 pb-1 space-x-2 text-zinc-500 text-xs font-mono">
+              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Describe the application you envision...</span>
+            </div>
+
+            <textarea
+              rows={2}
+              value={heroPrompt}
+              onChange={(e) => setHeroPrompt(e.target.value)}
+              placeholder="e.g. Build a real-time Subway Surfers 3D endless runner game with gold coins and speed trains..."
+              className="w-full bg-transparent text-sm sm:text-base text-white placeholder-zinc-500 px-3 py-1.5 focus:outline-none resize-none font-medium leading-relaxed"
+            />
+
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-white/[0.06] px-2">
+              <div className="flex items-center space-x-2 text-[11px] font-mono text-zinc-500">
+                <span className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">Next.js 15</span>
+                <span className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">React 19</span>
+                <span className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">Supabase</span>
               </div>
+
+              <div className="flex items-center space-x-2">
+                <Link
+                  href="/dashboard"
+                  className="px-4 py-2 text-zinc-400 hover:text-white text-xs font-semibold rounded-xl hover:bg-white/[0.04] transition"
+                >
+                  Explore the Workspace
+                </Link>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-xs rounded-xl transition-all duration-150 flex items-center space-x-2 shadow-lg shadow-cyan-500/20 active:scale-95"
+                >
+                  <span>Start Building</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          </form>
+
+          {/* Quick Prompt Pills */}
+          <div className="flex flex-wrap items-center justify-center gap-2 pt-4">
+            <span className="text-[11px] text-zinc-500 font-mono">Preset inspirations:</span>
+            {PROMPT_SUGGESTIONS.map((item) => (
+              <button
+                key={item.label}
+                type="button"
+                onClick={() => handleSelectSuggestion(item.prompt)}
+                className="px-3 py-1 rounded-full bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] hover:border-cyan-500/40 text-xs text-zinc-300 hover:text-white transition-all duration-150 flex items-center space-x-1"
+              >
+                <span>⚡</span>
+                <span>{item.label}</span>
+              </button>
             ))}
+          </div>
+        </div>
+
+        {/* Product Studio Mockup (High-End Frame) */}
+        <div className="pt-10 max-w-5xl mx-auto">
+          <div className="rounded-2xl border border-white/[0.1] bg-zinc-950/80 shadow-2xl shadow-cyan-500/5 overflow-hidden backdrop-blur-md">
+            {/* Window Chrome Header */}
+            <div className="px-4 py-3 bg-zinc-900/60 border-b border-white/[0.06] flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <span className="w-3 h-3 rounded-full bg-red-500/80" />
+                <span className="w-3 h-3 rounded-full bg-yellow-500/80" />
+                <span className="w-3 h-3 rounded-full bg-emerald-500/80" />
+                <span className="text-[11px] font-mono text-zinc-400 pl-2">nexus-studio-workspace • live execution</span>
+              </div>
+              <div className="flex items-center space-x-3 text-xs font-mono text-zinc-400">
+                <span className="text-emerald-400">● 10 Agents Active</span>
+                <span className="text-zinc-600">|</span>
+                <span>Port 3000 Ready</span>
+              </div>
+            </div>
+
+            {/* Simulated Side-by-Side Studio Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-12 divide-y md:divide-y-0 md:divide-x divide-white/[0.06] min-h-[380px]">
+              {/* Left VFS File Tree & Agent Stream */}
+              <div className="md:col-span-4 p-5 text-left space-y-4 bg-zinc-950/40">
+                <div className="flex items-center justify-between text-xs font-mono text-zinc-400 border-b border-white/[0.06] pb-2">
+                  <span>AUTONOMOUS PIPELINE</span>
+                  <span className="text-cyan-400 font-bold">100% VERIFIED</span>
+                </div>
+                <div className="space-y-2.5 font-mono text-xs">
+                  <div className="flex items-center space-x-2 text-zinc-300">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <span className="truncate">Product Specification Ingested</span>
+                  </div>
+                  <div className="flex items-center space-x-2 text-zinc-300">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <span className="truncate">React 19 Interactive State Compiled</span>
+                  </div>
+                  <div className="flex items-center space-x-2 text-zinc-300">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <span className="truncate">PostgreSQL / Supabase Schema Synced</span>
+                  </div>
+                  <div className="flex items-center space-x-2 text-zinc-300">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <span className="truncate">Zero Console Exceptions Confirmed</span>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-white/[0.06] space-y-1.5">
+                  <div className="text-[10px] font-mono text-zinc-500 uppercase">Live VFS Artifact</div>
+                  <div className="bg-zinc-900/90 rounded-xl p-3 border border-white/[0.06] text-[11px] font-mono text-cyan-300">
+                    &lt;App /&gt; mounted with 60FPS loop
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Live Application Interactive Preview */}
+              <div className="md:col-span-8 p-6 text-left flex flex-col justify-between bg-[#0b0e14]">
+                <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
+                  <div className="flex items-center space-x-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    <span className="text-xs font-extrabold text-white">Interactive Preview Canvas</span>
+                  </div>
+                  <div className="flex items-center space-x-1.5 bg-zinc-900 px-2.5 py-1 rounded-lg border border-white/[0.06] text-[11px] font-mono text-zinc-300">
+                    <span>localhost:3000/preview</span>
+                  </div>
+                </div>
+
+                {/* Visual Preview Graphic */}
+                <div className="my-auto py-8 text-center space-y-3">
+                  <div className="inline-flex p-4 rounded-2xl bg-gradient-to-tr from-cyan-500/20 via-blue-500/20 to-indigo-500/20 border border-cyan-500/30 text-3xl">
+                    ⚡
+                  </div>
+                  <h3 className="font-bold text-base text-white">Full-Stack Synthesis in Real-Time</h3>
+                  <p className="text-xs text-zinc-400 max-w-md mx-auto">
+                    Turn natural language instructions into high-performance applications with live responsive rendering, integrated database persistence, and zero boilerplate.
+                  </p>
+                </div>
+
+                <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs text-zinc-500 font-mono">
+                  <span>LATENCY: 14ms</span>
+                  <span>ISOLATED SANDBOX ACTIVE</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Interactive Quick Prompts Section */}
-      <section className="px-6 py-16 max-w-6xl mx-auto w-full space-y-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-zinc-800 pb-4">
-          <div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">Full-Stack Generation Presets</h2>
-            <p className="text-zinc-400 text-sm mt-1">
-              Select any real-world architecture to explore the full autonomous build workflow.
-            </p>
-          </div>
-          <Link href="/dashboard" className="text-xs text-cyan-400 hover:text-cyan-300 font-mono mt-2 md:mt-0">
-            View All Templates →
-          </Link>
+      {/* Connected 8-Stage Autonomous Lifecycle */}
+      <section className="relative z-10 py-16 border-t border-white/[0.06] max-w-6xl mx-auto px-6 w-full space-y-8">
+        <div className="text-center space-y-2 max-w-xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            The Autonomous Engineering Engine
+          </h2>
+          <p className="text-zinc-400 text-xs sm:text-sm">
+            Continuous orchestrated execution from natural language idea to production deployment.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {showcaseTemplates.map((t) => (
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5">
+          {[
+            { step: '01', title: 'IDEA', desc: 'Natural Prompt' },
+            { step: '02', title: 'PLAN', desc: 'Acceptance Spec' },
+            { step: '03', title: 'DESIGN', desc: 'Design Tokens' },
+            { step: '04', title: 'CODE', desc: 'React 19 & TS' },
+            { step: '05', title: 'EXECUTE', desc: 'VFS Sandbox' },
+            { step: '06', title: 'TEST', desc: 'DOM Assertions' },
+            { step: '07', title: 'DEBUG', desc: 'Zero Errors' },
+            { step: '08', title: 'DEPLOY', desc: 'Live Hosting' },
+          ].map((item) => (
             <div
-              key={t.name}
-              className="bg-surface-900/70 border border-zinc-800/80 rounded-2xl p-6 flex flex-col justify-between hover:border-cyan-500/40 transition group"
+              key={item.step}
+              className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:border-cyan-500/40 transition-colors flex flex-col justify-between space-y-2 text-center"
             >
-              <div className="space-y-3">
-                <span className="text-[10px] font-mono uppercase px-2.5 py-1 rounded bg-zinc-800 text-cyan-300 border border-zinc-700">
-                  {t.cat}
-                </span>
-                <h3 className="text-lg font-bold text-white group-hover:text-cyan-400 transition">{t.name}</h3>
-                <p className="text-xs text-zinc-400 italic">"{t.prompt}"</p>
-              </div>
-              <Link
-                href={`/dashboard?prompt=${encodeURIComponent(t.prompt)}`}
-                className="mt-6 flex items-center justify-between text-xs font-bold text-zinc-300 group-hover:text-white pt-4 border-t border-zinc-800/60"
-              >
-                <span>Build with NEXUS</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition" />
-              </Link>
+              <span className="text-[10px] font-mono font-bold text-cyan-400">{item.step}</span>
+              <div className="font-extrabold text-xs text-white tracking-wider">{item.title}</div>
+              <div className="text-[10px] text-zinc-500 line-clamp-1">{item.desc}</div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* 10 Specialized Agents Grid */}
-      <section className="px-6 py-16 bg-surface-900/30 border-y border-zinc-800/80">
-        <div className="max-w-6xl mx-auto space-y-8">
-          <div className="text-center space-y-2 max-w-2xl mx-auto">
-            <h2 className="text-3xl font-extrabold text-white tracking-tight">
-              10 Specialized Autonomous Agents
-            </h2>
-            <p className="text-zinc-400 text-sm">
-              Each phase is executed by an autonomous co-processor with its own tools, context, and verification criteria.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            {agentRoles.map((agent, i) => (
-              <div
-                key={agent.name}
-                className="bg-surface-950/80 border border-zinc-800/80 rounded-xl p-4 space-y-2 hover:border-zinc-700 transition"
-              >
-                <div className="w-7 h-7 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-mono font-bold text-cyan-400">
-                  {i + 1}
-                </div>
-                <h4 className="font-bold text-xs text-white">{agent.name}</h4>
-                <p className="text-[11px] text-zinc-400 leading-relaxed">{agent.role}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="mt-auto border-t border-zinc-800/80 py-8 px-6 text-center text-xs text-zinc-500 font-mono">
+      {/* Clean Footer */}
+      <footer className="mt-auto border-t border-white/[0.06] py-8 px-6 text-center text-xs text-zinc-500 font-mono">
         <p>NEXUS AI Platform • Production-Grade Autonomous Software Engineering</p>
       </footer>
     </div>
   );
 }
-

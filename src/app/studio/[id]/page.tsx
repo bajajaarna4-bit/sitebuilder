@@ -62,6 +62,11 @@ function StudioWorkspaceContent() {
   const [viewport, setViewport] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [isInspectMode, setIsInspectMode] = useState(false);
   const [selectedElement, setSelectedElement] = useState<VisualInspectorElement | null>(null);
+  const [isExplorerOpen, setIsExplorerOpen] = useState(true);
+  const [isAgentPanelOpen, setIsAgentPanelOpen] = useState(true);
+  const [isTerminalOpen, setIsTerminalOpen] = useState(true);
+  const [selectedModel, setSelectedModel] = useState('gemini-2.5-pro');
+  const [generationMode, setGenerationMode] = useState<'full' | 'refactor' | 'fix'>('full');
 
   // --- Visual Styler State ---
   const [elemText, setElemText] = useState('');
@@ -441,6 +446,31 @@ function StudioWorkspaceContent() {
 
         {/* View Controls & Action Buttons */}
         <div className="flex items-center space-x-3">
+          {/* Panel Visibility Toggles */}
+          <div className="hidden lg:flex items-center space-x-1 bg-zinc-900 border border-white/[0.08] p-0.5 rounded-lg text-xs">
+            <button
+              onClick={() => setIsExplorerOpen(!isExplorerOpen)}
+              className={`px-2 py-1 rounded font-medium text-[11px] transition ${isExplorerOpen ? 'bg-zinc-800 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
+              title="Toggle File Explorer"
+            >
+              Files
+            </button>
+            <button
+              onClick={() => setIsTerminalOpen(!isTerminalOpen)}
+              className={`px-2 py-1 rounded font-medium text-[11px] transition ${isTerminalOpen ? 'bg-zinc-800 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
+              title="Toggle Terminal Dock"
+            >
+              Terminal
+            </button>
+            <button
+              onClick={() => setIsAgentPanelOpen(!isAgentPanelOpen)}
+              className={`px-2 py-1 rounded font-medium text-[11px] transition ${isAgentPanelOpen ? 'bg-zinc-800 text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
+              title="Toggle Agent Panel"
+            >
+              Agents
+            </button>
+          </div>
+
           {/* Viewport Toggles */}
           <div className="flex items-center space-x-1 bg-zinc-900 border border-zinc-800 p-0.5 rounded-lg text-xs">
             <button
@@ -558,96 +588,114 @@ function StudioWorkspaceContent() {
       {/* Main 3-Column Studio Body */}
       <div className="flex-1 flex overflow-hidden">
         {/* ================= LEFT PANEL: Project Explorer ================= */}
-        <aside className="w-64 border-r border-zinc-800/80 bg-surface-950 flex flex-col flex-none">
-          <div className="p-3 border-b border-zinc-800/80 flex items-center justify-between text-xs font-bold text-zinc-300">
-            <span className="uppercase tracking-wider font-mono text-[10px] text-zinc-500">Explorer</span>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setIsCreatingFile(!isCreatingFile)}
-                className="text-zinc-400 hover:text-cyan-400 text-xs"
-                title="New File"
-              >
-                <Plus className="w-3.5 h-3.5" />
-              </button>
-              <span className="text-[10px] text-zinc-500 font-mono">{files.length}</span>
-            </div>
-          </div>
-
-          {isCreatingFile && (
-            <div className="p-2 border-b border-zinc-800/80 bg-zinc-900/60 flex items-center space-x-2">
-              <input
-                type="text"
-                placeholder="/src/components/MyComp.tsx"
-                value={newFileName}
-                onChange={(e) => setNewFileName(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleCreateFile()}
-                className="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1 text-xs text-white font-mono focus:outline-none focus:border-cyan-500"
-              />
-              <button onClick={handleCreateFile} className="text-cyan-400 text-xs font-bold">✓</button>
-            </div>
-          )}
-
-          <div className="flex-1 overflow-y-auto p-2 space-y-1">
-            {files.map((file) => (
-              <div
-                key={file.path}
-                onClick={() => {
-                  setActiveFilePath(file.path);
-                  setFileContent(file.content);
-                }}
-                className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs cursor-pointer transition font-mono truncate group ${
-                  activeFilePath === file.path
-                    ? 'bg-zinc-800 text-cyan-400 font-semibold border border-zinc-700/60'
-                    : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60'
-                }`}
-              >
-                <div className="flex items-center space-x-2 truncate">
-                  <FileCode className="w-3.5 h-3.5 flex-none" />
-                  <span className="truncate">{file.path}</span>
-                </div>
+        {isExplorerOpen && (
+          <aside className="w-64 border-r border-white/[0.08] bg-[#090b0e] flex flex-col flex-none">
+            <div className="p-3 border-b border-white/[0.08] flex items-center justify-between text-xs font-bold text-zinc-300">
+              <span className="uppercase tracking-wider font-mono text-[10px] text-zinc-500">Explorer</span>
+              <div className="flex items-center space-x-2">
                 <button
-                  onClick={(e) => handleDeleteFile(file.path, e)}
-                  className="opacity-0 group-hover:opacity-100 text-zinc-500 hover:text-red-400 p-0.5 rounded transition"
-                  title="Delete File"
+                  onClick={() => setIsCreatingFile(!isCreatingFile)}
+                  className="text-zinc-400 hover:text-cyan-400 text-xs transition"
+                  title="New File"
                 >
-                  <Trash2 className="w-3 h-3" />
+                  <Plus className="w-3.5 h-3.5" />
                 </button>
+                <span className="text-[10px] text-zinc-500 font-mono">{files.length}</span>
               </div>
-            ))}
-          </div>
+            </div>
 
-          {/* Database & Integrations Quick Status */}
-          <div className="p-3 border-t border-zinc-800/80 bg-surface-900/40 space-y-2 text-[11px]">
-            <div className="flex items-center justify-between">
-              <span className="text-zinc-400 flex items-center space-x-1">
-                <Database className="w-3 h-3 text-emerald-400" />
-                <span>Supabase DB</span>
-              </span>
-              <span className="text-emerald-400 font-mono font-bold">CONNECTED</span>
+            {isCreatingFile && (
+              <div className="p-2 border-b border-white/[0.08] bg-zinc-900/60 flex items-center space-x-2">
+                <input
+                  type="text"
+                  placeholder="/src/components/MyComp.tsx"
+                  value={newFileName}
+                  onChange={(e) => setNewFileName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleCreateFile()}
+                  className="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1 text-xs text-white font-mono focus:outline-none focus:border-cyan-500"
+                />
+                <button onClick={handleCreateFile} className="text-cyan-400 text-xs font-bold">✓</button>
+              </div>
+            )}
+
+            <div className="flex-1 overflow-y-auto p-2 space-y-1">
+              {files.map((file) => (
+                <div
+                  key={file.path}
+                  onClick={() => {
+                    setActiveFilePath(file.path);
+                    setFileContent(file.content);
+                  }}
+                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs cursor-pointer transition font-mono truncate group ${
+                    activeFilePath === file.path
+                      ? 'bg-white/[0.08] text-cyan-300 font-semibold border border-white/[0.1]'
+                      : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.03]'
+                  }`}
+                >
+                  <div className="flex items-center space-x-2 truncate">
+                    <FileCode className="w-3.5 h-3.5 flex-none text-zinc-400" />
+                    <span className="truncate">{file.path}</span>
+                  </div>
+                  <button
+                    onClick={(e) => handleDeleteFile(file.path, e)}
+                    className="opacity-0 group-hover:opacity-100 text-zinc-500 hover:text-red-400 p-0.5 rounded transition"
+                    title="Delete File"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-zinc-400 flex items-center space-x-1">
-                <Cpu className="w-3 h-3 text-cyan-400" />
-                <span>AI Gateway</span>
-              </span>
-              <span className="text-cyan-400 font-mono font-bold">ACTIVE</span>
+
+            {/* Database & Integrations Quick Status */}
+            <div className="p-3 border-t border-white/[0.08] bg-zinc-950/40 space-y-2 text-[11px]">
+              <div className="flex items-center justify-between">
+                <span className="text-zinc-400 flex items-center space-x-1">
+                  <Database className="w-3 h-3 text-emerald-400" />
+                  <span>Supabase DB</span>
+                </span>
+                <span className="text-emerald-400 font-mono font-bold">CONNECTED</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-zinc-400 flex items-center space-x-1">
+                  <Cpu className="w-3 h-3 text-cyan-400" />
+                  <span>AI Gateway</span>
+                </span>
+                <span className="text-cyan-400 font-mono font-bold">ACTIVE</span>
+              </div>
             </div>
-          </div>
-        </aside>
+          </aside>
+        )}
 
         {/* ================= CENTER PANEL: Preview & Code ================= */}
         <main className="flex-1 flex flex-col bg-surface-950 overflow-hidden relative">
           <div className="flex-1 flex overflow-hidden">
             {/* Live Preview Iframe */}
             {(centerMode === 'preview' || centerMode === 'split') && (
-              <div className="flex-1 bg-zinc-950 flex flex-col items-center justify-center p-2 relative overflow-hidden border-r border-zinc-800/80">
-                <div className={`h-full ${viewportWidthClass} bg-black rounded-lg overflow-hidden border border-zinc-800 shadow-2xl relative transition-all duration-300`}>
+              <div className="flex-1 bg-[#090b0e] flex flex-col items-center justify-center p-3 relative overflow-hidden border-r border-white/[0.08]">
+                <div className={`h-full ${viewportWidthClass} bg-black rounded-2xl overflow-hidden border border-white/[0.1] shadow-2xl relative transition-all duration-300 flex flex-col`}>
+                  {/* Browser Chrome Header */}
+                  <div className="h-8 bg-zinc-900/90 border-b border-white/[0.06] px-3 flex items-center justify-between text-xs font-mono select-none flex-none">
+                    <div className="flex items-center space-x-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
+                    </div>
+                    <div className="flex-1 max-w-xs mx-auto bg-black/60 border border-white/[0.06] rounded-full px-3 py-0.5 text-center text-[10px] text-zinc-400 truncate">
+                      🔒 localhost:3000/app
+                    </div>
+                    <div className="flex items-center space-x-2 text-zinc-400">
+                      <button onClick={refreshPreview} className="hover:text-white transition" title="Reload Frame">
+                        <RotateCw className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
                   <iframe
                     ref={iframeRef}
                     title="NEXUS Live Preview"
                     sandbox="allow-scripts allow-forms allow-same-origin allow-modals"
                     srcDoc={buildPreviewHtml(files)}
-                    className="w-full h-full border-none"
+                    className="w-full flex-1 border-none"
                   />
                 </div>
 
@@ -877,20 +925,74 @@ function StudioWorkspaceContent() {
             </div>
           </div>
 
-          <form onSubmit={handleRunAgent} className="p-3 border-t border-zinc-800/80 bg-surface-950 space-y-2">
+          {/* Enhanced Prompt Composer */}
+          <form onSubmit={handleRunAgent} className="p-3 border-t border-white/[0.08] bg-[#090b0e] space-y-2.5">
+            <div className="flex items-center justify-between text-[11px] font-mono">
+              <div className="flex items-center space-x-1">
+                <select
+                  value={selectedModel}
+                  onChange={(e) => setSelectedModel(e.target.value)}
+                  className="bg-zinc-900 border border-white/[0.08] rounded-lg px-2 py-0.5 text-[11px] text-cyan-300 focus:outline-none"
+                >
+                  <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                  <option value="claude-3-5-sonnet">Claude 3.5 Sonnet</option>
+                  <option value="gpt-4o">GPT-4o</option>
+                </select>
+              </div>
+              <div className="flex items-center space-x-1 text-zinc-500 text-[10px]">
+                <span>Mode:</span>
+                <button
+                  type="button"
+                  onClick={() => setGenerationMode(generationMode === 'full' ? 'refactor' : 'full')}
+                  className="text-zinc-300 hover:text-white underline"
+                >
+                  {generationMode === 'full' ? 'Full-Stack' : 'Refactor'}
+                </button>
+              </div>
+            </div>
+
             <textarea
               rows={3}
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Give instructions to AI (e.g., 'Add a dark hero banner and video player modal')..."
-              className="w-full bg-surface-900 border border-zinc-700 rounded-xl p-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500 resize-none"
+              placeholder="Give instructions to AI (e.g. 'Add gold coin sounds, speed train obstacles, and high-score modal')..."
+              className="w-full bg-zinc-900/90 border border-white/[0.08] focus:border-cyan-500 rounded-xl p-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none resize-none leading-relaxed transition"
             />
-            <div className="flex items-center space-x-2">
+
+            {/* Quick Prompt Suggestion Pills */}
+            <div className="flex flex-wrap gap-1">
+              {[
+                'Add sound effects & particles',
+                'Refactor with dark glass theme',
+                'Add local storage persistence',
+                'Fix all errors & verify',
+              ].map((sug) => (
+                <button
+                  key={sug}
+                  type="button"
+                  onClick={() => setPrompt(sug)}
+                  className="px-2 py-0.5 rounded text-[10px] font-mono bg-white/[0.03] hover:bg-white/[0.08] text-zinc-400 hover:text-zinc-200 transition border border-white/[0.06]"
+                >
+                  + {sug}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center space-x-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setShowVisionModal(true)}
+                className="p-2 rounded-xl bg-zinc-900 border border-white/[0.08] text-zinc-400 hover:text-cyan-400 transition"
+                title="Attach Screenshot"
+              >
+                <ImageIcon className="w-3.5 h-3.5" />
+              </button>
+
               {isGenerating ? (
                 <button
                   type="button"
                   onClick={handleCancelAgent}
-                  className="w-full py-2 bg-red-600 hover:bg-red-500 text-white font-bold text-xs rounded-xl transition flex items-center justify-center space-x-1.5"
+                  className="flex-1 py-2 bg-red-600/90 hover:bg-red-500 text-white font-bold text-xs rounded-xl transition flex items-center justify-center space-x-1.5 shadow-lg shadow-red-500/20"
                 >
                   <StopCircle className="w-3.5 h-3.5" />
                   <span>Cancel Orchestration</span>
@@ -898,10 +1000,10 @@ function StudioWorkspaceContent() {
               ) : (
                 <button
                   type="submit"
-                  className="w-full py-2 bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold text-xs rounded-xl transition flex items-center justify-center space-x-1.5 shadow-lg shadow-cyan-500/20"
+                  className="flex-1 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-xs rounded-xl transition flex items-center justify-center space-x-1.5 shadow-lg shadow-cyan-500/20 active:scale-95"
                 >
                   <Send className="w-3.5 h-3.5" />
-                  <span>Dispatch Agents</span>
+                  <span>Dispatch Agents (⌘↵)</span>
                 </button>
               )}
             </div>

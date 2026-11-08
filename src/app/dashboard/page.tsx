@@ -22,6 +22,12 @@ import {
   RotateCcw,
   Download,
   Filter,
+  Gamepad2,
+  Car,
+  MessageSquare,
+  Sparkle,
+  Layout,
+  Terminal,
 } from 'lucide-react';
 
 const INITIAL_PROJECTS: Project[] = [
@@ -183,12 +189,13 @@ function DashboardContent() {
   const [projects, setProjects] = useState<Project[]>(INITIAL_PROJECTS);
   const [search, setSearch] = useState('');
   const [filterTab, setFilterTab] = useState<'active' | 'archived' | 'all'>('active');
+  const [categoryFilter, setCategoryFilter] = useState('all');
 
   // Modals
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
   const [newProjectPrompt, setNewProjectPrompt] = useState('');
-  const [selectedTemplate, setSelectedTemplate] = useState('nextjs-saas');
+  const [selectedTemplate, setSelectedTemplate] = useState('poki-games');
 
   // Rename modal state
   const [renamingProject, setRenamingProject] = useState<Project | null>(null);
@@ -285,7 +292,7 @@ function DashboardContent() {
   // Direct ZIP download from dashboard
   const handleDownloadZip = async (project: Project, e: React.MouseEvent) => {
     e.stopPropagation();
-    const tmpl = TEMPLATES[project.template] || TEMPLATES['nextjs-saas'];
+    const tmpl = TEMPLATES[project.template] || TEMPLATES['poki-games'];
     const virtualFiles = Object.entries(tmpl.files).map(([path, content]) => ({
       id: path,
       projectId: project.id,
@@ -309,11 +316,20 @@ function DashboardContent() {
     URL.revokeObjectURL(url);
   };
 
-  // Filter projects by search and tab
+  // Filter projects by search, tab, and category
   const filtered = projects
     .filter((p) => {
       if (filterTab === 'active') return !p.isArchived;
       if (filterTab === 'archived') return p.isArchived;
+      return true;
+    })
+    .filter((p) => {
+      if (categoryFilter === 'gaming') return p.template.includes('poki') || p.description.toLowerCase().includes('game');
+      if (categoryFilter === 'mobility') return p.template.includes('uber') || p.description.toLowerCase().includes('transit');
+      if (categoryFilter === 'social') return p.template.includes('whatsapp') || p.template.includes('instagram');
+      if (categoryFilter === 'ai') return p.template.includes('claude') || p.template.includes('emergent');
+      if (categoryFilter === 'design') return p.template.includes('canva') || p.template.includes('figma');
+      if (categoryFilter === 'os') return p.template.includes('ubuntu') || p.template.includes('chrome');
       return true;
     })
     .filter(
@@ -323,16 +339,21 @@ function DashboardContent() {
     );
 
   return (
-    <main className="max-w-7xl mx-auto px-6 py-10 w-full space-y-8 flex-1">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800 pb-6">
-        <div>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">Project Workspaces</h1>
-          <p className="text-xs text-zinc-400 mt-1">
-            Autonomous full-stack applications managed by NEXUS AI orchestration engine.
+    <main className="max-w-6xl mx-auto px-6 py-10 w-full space-y-8 flex-1">
+      {/* Editorial Header */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-white/[0.06] pb-6">
+        <div className="space-y-1">
+          <div className="flex items-center space-x-2 text-xs font-mono text-cyan-400">
+            <span>●</span>
+            <span>AUTONOMOUS WORKSPACE REGISTRY</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Workspaces</h1>
+          <p className="text-xs sm:text-sm text-zinc-400 font-normal">
+            Select any live simulated application or initialize a new autonomous workspace.
           </p>
         </div>
-        <div className="flex items-center space-x-3">
+
+        <div className="flex items-center space-x-3 shrink-0">
           <button
             onClick={() => {
               setNewProjectPrompt('Build a Subway Surfer 3D endless runner game with real-time controls');
@@ -347,7 +368,7 @@ function DashboardContent() {
           </button>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 hover:text-white border border-zinc-700 font-extrabold text-xs rounded-xl transition flex items-center justify-center space-x-2"
+            className="px-4 py-2.5 bg-white hover:bg-zinc-200 text-black font-extrabold text-xs rounded-xl transition flex items-center justify-center space-x-2 shadow-lg shadow-white/5 active:scale-95"
           >
             <Plus className="w-4 h-4" />
             <span>New Application</span>
@@ -355,149 +376,123 @@ function DashboardContent() {
         </div>
       </div>
 
-      {/* Stats Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-surface-900/60 border border-zinc-800/80 rounded-xl p-4 flex items-center justify-between">
-          <div>
-            <span className="text-xs text-zinc-400 font-medium">Total Workspaces</span>
-            <div className="text-2xl font-black text-white">{projects.length}</div>
-          </div>
-          <FolderCode className="w-8 h-8 text-cyan-400 opacity-60" />
+      {/* Fluid Filter & Command Bar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        {/* Category Pills */}
+        <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 text-xs">
+          {[
+            { id: 'all', label: 'All Workspaces' },
+            { id: 'gaming', label: 'Games & Arcade' },
+            { id: 'mobility', label: 'Mobility & Cabs' },
+            { id: 'social', label: 'Social & Chat' },
+            { id: 'ai', label: 'AI & Artifacts' },
+            { id: 'design', label: 'Design & Canvas' },
+            { id: 'os', label: 'OS & Simulator' },
+          ].map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setCategoryFilter(cat.id)}
+              className={`px-3 py-1.5 rounded-full whitespace-nowrap transition-all duration-150 font-medium ${
+                categoryFilter === cat.id
+                  ? 'bg-white text-black font-bold shadow-sm'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
         </div>
-        <div className="bg-surface-900/60 border border-zinc-800/80 rounded-xl p-4 flex items-center justify-between">
-          <div>
-            <span className="text-xs text-zinc-400 font-medium">Monthly Token Quota</span>
-            <div className="text-2xl font-black text-white">482,100 / 5,000,000</div>
-          </div>
-          <Sparkles className="w-8 h-8 text-blue-400 opacity-60" />
-        </div>
-        <div className="bg-surface-900/60 border border-zinc-800/80 rounded-xl p-4 flex items-center justify-between">
-          <div>
-            <span className="text-xs text-zinc-400 font-medium">Active Agents</span>
-            <div className="text-2xl font-black text-emerald-400">10 Ready</div>
-          </div>
-          <CheckCircle2 className="w-8 h-8 text-emerald-400 opacity-60" />
-        </div>
-      </div>
 
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="relative max-w-md w-full">
-          <Search className="w-4 h-4 text-zinc-500 absolute left-3.5 top-3" />
+        {/* Search Input */}
+        <div className="relative max-w-xs w-full">
+          <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-3.5 top-2.5" />
           <input
             type="text"
-            placeholder="Search workspaces by title or intent..."
+            placeholder="Search environments..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-surface-900 border border-zinc-800 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500"
+            className="w-full bg-zinc-950/80 border border-white/[0.08] focus:border-cyan-500/50 rounded-xl pl-9 pr-4 py-1.5 text-xs text-white placeholder-zinc-500 focus:outline-none transition"
           />
-        </div>
-
-        {/* Tab Filters */}
-        <div className="flex items-center space-x-1 bg-surface-900 p-1 rounded-xl border border-zinc-800 text-xs">
-          <button
-            onClick={() => setFilterTab('active')}
-            className={`px-3 py-1.5 rounded-lg font-medium transition ${
-              filterTab === 'active' ? 'bg-zinc-800 text-cyan-400 font-bold' : 'text-zinc-400 hover:text-white'
-            }`}
-          >
-            Active ({projects.filter((p) => !p.isArchived).length})
-          </button>
-          <button
-            onClick={() => setFilterTab('archived')}
-            className={`px-3 py-1.5 rounded-lg font-medium transition ${
-              filterTab === 'archived' ? 'bg-zinc-800 text-cyan-400 font-bold' : 'text-zinc-400 hover:text-white'
-            }`}
-          >
-            Archived ({projects.filter((p) => p.isArchived).length})
-          </button>
-          <button
-            onClick={() => setFilterTab('all')}
-            className={`px-3 py-1.5 rounded-lg font-medium transition ${
-              filterTab === 'all' ? 'bg-zinc-800 text-cyan-400 font-bold' : 'text-zinc-400 hover:text-white'
-            }`}
-          >
-            All ({projects.length})
-          </button>
         </div>
       </div>
 
-      {/* Projects Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {/* Workspaces Continuous Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filtered.map((project) => (
           <div
             key={project.id}
-            onClick={() => router.push(`/studio/${project.id}?template=${project.template}&prompt=${encodeURIComponent(project.description || project.name)}`)}
-            className={`bg-surface-900/80 border rounded-2xl p-5 flex flex-col justify-between transition cursor-pointer group shadow-sm hover:shadow-cyan-500/5 ${
-              project.isArchived ? 'border-zinc-800 opacity-60' : 'border-zinc-800/80 hover:border-cyan-500/50'
+            onClick={() =>
+              router.push(
+                `/studio/${project.id}?template=${project.template}&prompt=${encodeURIComponent(
+                  project.description || project.name
+                )}`
+              )
+            }
+            className={`p-5 rounded-2xl border transition-all duration-200 cursor-pointer group flex flex-col justify-between space-y-4 ${
+              project.isArchived
+                ? 'bg-zinc-950/30 border-white/[0.04] opacity-50'
+                : 'bg-zinc-950/60 border-white/[0.06] hover:border-cyan-500/40 hover:bg-zinc-900/40 shadow-sm hover:shadow-cyan-500/5'
             }`}
           >
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-zinc-800 text-cyan-300 border border-zinc-700">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-cyan-300">
                   {project.template}
                 </span>
-                <span className="text-[10px] font-mono text-emerald-400 flex items-center space-x-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>{project.currentStatus}</span>
-                </span>
+
+                <div className="flex items-center space-x-2 text-[10px] font-mono text-zinc-500">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  <span className="text-emerald-400 font-bold">{project.currentStatus}</span>
+                </div>
               </div>
 
-              <div className="flex items-center justify-between">
-                <h3 className="text-base font-bold text-white group-hover:text-cyan-400 transition">
+              <div>
+                <h3 className="font-extrabold text-base text-white group-hover:text-cyan-300 transition-colors">
                   {project.name}
                 </h3>
+                <p className="text-xs text-zinc-400 line-clamp-2 mt-1 leading-relaxed">
+                  {project.description}
+                </p>
+              </div>
+            </div>
+
+            {/* Contextual Actions Toolbar */}
+            <div className="pt-3 border-t border-white/[0.04] flex items-center justify-between text-xs text-zinc-500">
+              <span className="font-mono text-[11px] text-zinc-500">
+                {new Date(project.createdAt).toLocaleDateString()}
+              </span>
+
+              <div className="flex items-center space-x-1">
                 <button
                   onClick={(e) => openRenameModal(project, e)}
-                  className="opacity-0 group-hover:opacity-100 p-1 text-zinc-500 hover:text-white transition"
+                  className="p-1.5 hover:text-white rounded hover:bg-white/[0.05] transition opacity-0 group-hover:opacity-100"
                   title="Rename"
                 >
                   <Edit2 className="w-3.5 h-3.5" />
                 </button>
-              </div>
-
-              <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
-                {project.description}
-              </p>
-            </div>
-
-            <div className="pt-4 mt-6 border-t border-zinc-800/80 flex items-center justify-between text-xs text-zinc-500">
-              <div className="flex items-center space-x-1.5">
-                <Clock className="w-3.5 h-3.5" />
-                <span>{new Date(project.createdAt).toLocaleDateString()}</span>
-              </div>
-
-              <div className="flex items-center space-x-1">
                 <button
                   onClick={(e) => handleDownloadZip(project, e)}
-                  className="p-1.5 text-zinc-500 hover:text-cyan-400 hover:bg-zinc-800 rounded-lg transition"
+                  className="p-1.5 hover:text-cyan-400 rounded hover:bg-white/[0.05] transition opacity-0 group-hover:opacity-100"
                   title="Export ZIP"
                 >
                   <Download className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={(e) => handleDuplicate(project, e)}
-                  className="p-1.5 text-zinc-500 hover:text-blue-400 hover:bg-zinc-800 rounded-lg transition"
-                  title="Duplicate Project"
+                  className="p-1.5 hover:text-blue-400 rounded hover:bg-white/[0.05] transition opacity-0 group-hover:opacity-100"
+                  title="Duplicate"
                 >
                   <Copy className="w-3.5 h-3.5" />
                 </button>
                 <button
-                  onClick={(e) => handleToggleArchive(project, e)}
-                  className="p-1.5 text-zinc-500 hover:text-amber-400 hover:bg-zinc-800 rounded-lg transition"
-                  title={project.isArchived ? 'Restore' : 'Archive'}
-                >
-                  {project.isArchived ? <RotateCcw className="w-3.5 h-3.5" /> : <Archive className="w-3.5 h-3.5" />}
-                </button>
-                <button
                   onClick={(e) => handleDelete(project.id, e)}
-                  className="p-1.5 text-zinc-500 hover:text-red-400 hover:bg-zinc-800 rounded-lg transition"
-                  title="Delete Project"
+                  className="p-1.5 hover:text-red-400 rounded hover:bg-white/[0.05] transition opacity-0 group-hover:opacity-100"
+                  title="Delete"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
-                <span className="font-semibold text-cyan-400 group-hover:translate-x-0.5 transition flex items-center space-x-1 pl-1">
-                  <span>Studio</span>
+                <span className="text-xs font-semibold text-cyan-400 flex items-center space-x-1 pl-2 group-hover:translate-x-0.5 transition-transform">
+                  <span>Open Studio</span>
                   <ArrowRight className="w-3 h-3" />
                 </span>
               </div>
@@ -508,15 +503,15 @@ function DashboardContent() {
 
       {/* Rename Modal */}
       {renamingProject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-          <div className="bg-surface-900 border border-zinc-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl space-y-4">
-            <h3 className="text-sm font-bold text-white">Rename Project</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+          <div className="bg-zinc-950 border border-white/[0.1] rounded-2xl p-6 max-w-sm w-full shadow-2xl space-y-4">
+            <h3 className="text-sm font-bold text-white">Rename Workspace</h3>
             <form onSubmit={handleSaveRename} className="space-y-4">
               <input
                 type="text"
                 value={renameValue}
                 onChange={(e) => setRenameValue(e.target.value)}
-                className="w-full bg-surface-950 border border-zinc-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
+                className="w-full bg-zinc-900 border border-white/[0.1] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
               />
               <div className="flex justify-end space-x-2">
                 <button
@@ -540,10 +535,13 @@ function DashboardContent() {
 
       {/* New Project Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-          <div className="bg-surface-900 border border-zinc-800 rounded-2xl p-6 max-w-xl w-full shadow-2xl space-y-5">
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-              <h2 className="text-lg font-bold text-white">Create New Application</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+          <div className="bg-zinc-950 border border-white/[0.1] rounded-2xl p-6 max-w-xl w-full shadow-2xl space-y-5">
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+              <div>
+                <h2 className="text-base font-bold text-white">Initialize New Application</h2>
+                <p className="text-xs text-zinc-400 mt-0.5">Configure your prompt and architecture foundation.</p>
+              </div>
               <button onClick={() => setIsModalOpen(false)} className="text-zinc-500 hover:text-white text-sm">
                 ✕
               </button>
@@ -555,10 +553,10 @@ function DashboardContent() {
                 <input
                   type="text"
                   required
-                  placeholder="e.g., StreamFlix Pro, Aura Commerce"
+                  placeholder="e.g. Subway Surfers 3D, OmniRide Transit"
                   value={newProjectName}
                   onChange={(e) => setNewProjectName(e.target.value)}
-                  className="w-full bg-surface-950 border border-zinc-700 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
+                  className="w-full bg-zinc-900 border border-white/[0.1] rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
                 />
               </div>
 
@@ -566,30 +564,34 @@ function DashboardContent() {
                 <label className="text-xs font-semibold text-zinc-300">Application Intent / Prompt</label>
                 <textarea
                   rows={3}
-                  placeholder="Describe your application: e.g. Build a premium Netflix-like streaming platform with dark aesthetic, hero carousel, and video player modal."
+                  placeholder="Describe your desired application features, state behavior, and visual aesthetic..."
                   value={newProjectPrompt}
                   onChange={(e) => setNewProjectPrompt(e.target.value)}
-                  className="w-full bg-surface-950 border border-zinc-700 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
+                  className="w-full bg-zinc-900 border border-white/[0.1] rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-cyan-500 resize-none"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">Select Architecture Template</label>
+                <label className="text-xs font-semibold text-zinc-300">Select Foundation Architecture</label>
                 <select
                   value={selectedTemplate}
                   onChange={(e) => setSelectedTemplate(e.target.value)}
-                  className="w-full bg-surface-950 border border-zinc-700 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
+                  className="w-full bg-zinc-900 border border-white/[0.1] rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
                 >
-                  <option value="netflix-streaming">Netflix Clone (Video Streaming & Media)</option>
-                  <option value="instagram-social">Instagram Social (Feed, Stories, Likes)</option>
-                  <option value="amazon-commerce">Amazon E-Commerce (Catalog, Cart, Reviews)</option>
-                  <option value="youtube-platform">YouTube Platform (Video Grid, Comments)</option>
-                  <option value="blinkit-quick">Blinkit Quick-Commerce (10-Min Delivery Cart)</option>
-                  <option value="nextjs-saas">Modern Next.js 15 SaaS Starter</option>
+                  <option value="poki-games">Poki Arcade & Subway Surfers 3D Runner</option>
+                  <option value="uber-rapido-ola">OmniRide — Uber, Rapido & Ola Unified Mobility</option>
+                  <option value="whatsapp-web">WhatsApp Web — Chats & Real-time Calling</option>
+                  <option value="claude-ai">Claude 3.5 Sonnet — Interactive AI & Artifacts</option>
+                  <option value="canva-designer">Canva Studio — Graphic Design & Vectors</option>
+                  <option value="ubuntu-desktop">Ubuntu 24.04 LTS — Linux Desktop Simulator</option>
+                  <option value="spotify-music">Spotify Player — Audio & Podcast Streaming</option>
+                  <option value="netflix-streaming">StreamFlix Pro — Video Streaming & Media</option>
+                  <option value="instagram-social">Instagram Social — Stories, Feed & Profiles</option>
+                  <option value="amazon-commerce">Aura Commerce — Store, Cart & Reviews</option>
                 </select>
               </div>
 
-              <div className="flex items-center justify-end space-x-3 pt-3 border-t border-zinc-800">
+              <div className="flex items-center justify-end space-x-3 pt-3 border-t border-white/[0.08]">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
@@ -599,9 +601,9 @@ function DashboardContent() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold text-xs rounded-xl transition shadow-lg shadow-cyan-500/20"
+                  className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-xs rounded-xl transition shadow-lg shadow-cyan-500/20 active:scale-95"
                 >
-                  Initialize & Launch Studio
+                  Initialize & Launch Studio →
                 </button>
               </div>
             </form>
@@ -614,7 +616,7 @@ function DashboardContent() {
 
 export default function DashboardPage() {
   return (
-    <div className="min-h-screen bg-surface-950 text-zinc-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#07090d] text-zinc-100 flex flex-col font-sans selection:bg-cyan-500/20 selection:text-cyan-200">
       <NavigationBar />
       <Suspense fallback={<div className="p-8 text-center text-xs font-mono text-zinc-500">Loading workspaces...</div>}>
         <DashboardContent />
