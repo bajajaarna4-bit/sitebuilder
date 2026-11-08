@@ -235,3 +235,4 @@ export const MULTILINGUAL_GUIDES: Record<SupportedLanguage, LocalizedInstruction
     ],
   },
 };
+

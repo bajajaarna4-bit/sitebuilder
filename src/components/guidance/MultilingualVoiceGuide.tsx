@@ -434,3 +434,4 @@ export function MultilingualVoiceGuide({ onSelectPrompt, defaultOpen = false }: 
     </>
   );
 }
+

@@ -1,5 +1,6 @@
 import { ProjectTemplate } from '../projects/templates';
 import { googleAiNetflixTemplate } from '../projects/templates/google_ai_netflix';
+import { pinterestCanvaAiTemplate } from '../projects/templates/pinterest_canva_ai';
 
 /**
  * Dynamic Adaptive Application Synthesizer.
@@ -11,6 +12,20 @@ export function synthesizeDynamicApp(prompt: string): ProjectTemplate {
   const p = prompt.trim();
   const lower = p.toLowerCase();
   const safePromptEscaped = JSON.stringify(prompt);
+
+  // 00. PINTEREST, CANVA, GOOGLE AI, AESTHETICS & MOODBOARDS
+  if (
+    lower.includes('pinterest') ||
+    lower.includes('canva') ||
+    lower.includes('aesthetic') ||
+    lower.includes('asthetic') ||
+    lower.includes('aesthetics') ||
+    lower.includes('asthetics') ||
+    lower.includes('moodboard') ||
+    lower.includes('uff')
+  ) {
+    return pinterestCanvaAiTemplate;
+  }
 
   // 0. CINEMA, NETFLIX, GOOGLE AI, VIDEOS & ANIMATIONS
   if (

@@ -7,6 +7,7 @@ import { saasTemplate } from './saas';
 import { emergentAntigravityTemplate } from './emergent_antigravity';
 import { pokiClone } from './poki';
 import { googleAiNetflixTemplate } from './google_ai_netflix';
+import { pinterestCanvaAiTemplate } from './pinterest_canva_ai';
 import {
   spotifyClone,
   omegleClone,
@@ -41,6 +42,7 @@ export interface ProjectTemplate {
 }
 
 export const TEMPLATES: Record<string, ProjectTemplate> = {
+  'pinterest-canva-ai': pinterestCanvaAiTemplate,
   'google-ai-netflix': googleAiNetflixTemplate,
   'poki-games': pokiClone,
   'uber-rapido-ola': uberRapidoOlaClone,
@@ -73,6 +75,7 @@ export const TEMPLATES: Record<string, ProjectTemplate> = {
 };
 
 export type TemplateKey =
+  | 'pinterest-canva-ai'
   | 'google-ai-netflix'
   | 'poki-games'
   | 'uber-rapido-ola'
@@ -106,6 +109,20 @@ export type TemplateKey =
 
 export function selectTemplateForPrompt(prompt: string): { key: TemplateKey; template: ProjectTemplate } {
   const p = (prompt || '').toLowerCase().trim();
+
+  // 00. Pinterest Visual Moodboard × Canva Studio × Google AI Aesthetic Synthesizer
+  if (
+    p.includes('pinterest') ||
+    (p.includes('canva') && (p.includes('pinterest') || p.includes('google') || p.includes('ai') || p.includes('aesthetic') || p.includes('asthetic') || p.includes('uff'))) ||
+    p.includes('aesthetic') ||
+    p.includes('asthetic') ||
+    p.includes('aesthetics') ||
+    p.includes('asthetics') ||
+    p.includes('moodboard') ||
+    (p.includes('canva') && p.includes('design'))
+  ) {
+    return { key: 'pinterest-canva-ai', template: pinterestCanvaAiTemplate };
+  }
 
   // 0. Google AI Studio & Netflix Cinema (Cinematic 4K Video Streaming & Animations)
   if (

@@ -120,7 +120,8 @@ function StudioWorkspaceContent() {
     // 2. Check projectId keywords
     if (!resolvedTemplate && projectId) {
       const pId = projectId.toLowerCase();
-      if (pId.includes('cinema') || pId.includes('google_ai') || pId.includes('google-ai') || pId.includes('streamflix')) resolvedTemplate = TEMPLATES['google-ai-netflix'];
+      if (pId.includes('pinterest') || pId.includes('aura') || pId.includes('aesthetic')) resolvedTemplate = TEMPLATES['pinterest-canva-ai'];
+      else if (pId.includes('cinema') || pId.includes('google_ai') || pId.includes('google-ai') || pId.includes('streamflix')) resolvedTemplate = TEMPLATES['google-ai-netflix'];
       else if (pId.includes('amazon')) resolvedTemplate = TEMPLATES['amazon-commerce'];
       else if (pId.includes('instagram')) resolvedTemplate = TEMPLATES['instagram-social'];
       else if (pId.includes('netflix')) resolvedTemplate = TEMPLATES['google-ai-netflix'];
@@ -963,6 +964,7 @@ function StudioWorkspaceContent() {
             {/* Quick Prompt Suggestion Pills */}
             <div className="flex flex-wrap gap-1">
               {[
+                'Pinterest × Canva × Google AI Aesthetic',
                 'Google AI & Netflix Cinema with 4K Video',
                 'Multilingual Voice (EN/HI/KO/ZH/SA)',
                 'Subway Surfers 3D Runner with Keyboard Controls',
