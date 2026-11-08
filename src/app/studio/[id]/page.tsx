@@ -102,11 +102,55 @@ function StudioWorkspaceContent() {
 
   // Initialize Project Files from Template
   useEffect(() => {
-    const initialPrompt = searchParams.get('prompt') || 'Build a premium Netflix-like streaming platform';
+    const paramTemplate = searchParams.get('template');
+    const paramPrompt = searchParams.get('prompt');
+
+    let resolvedTemplate: any = null;
+
+    // 1. Check explicit template query param
+    if (paramTemplate && TEMPLATES[paramTemplate]) {
+      resolvedTemplate = TEMPLATES[paramTemplate];
+    }
+
+    // 2. Check projectId keywords
+    if (!resolvedTemplate && projectId) {
+      const pId = projectId.toLowerCase();
+      if (pId.includes('amazon')) resolvedTemplate = TEMPLATES['amazon-commerce'];
+      else if (pId.includes('instagram')) resolvedTemplate = TEMPLATES['instagram-social'];
+      else if (pId.includes('netflix')) resolvedTemplate = TEMPLATES['netflix-streaming'];
+      else if (pId.includes('poki') || pId.includes('subway') || pId.includes('game')) resolvedTemplate = TEMPLATES['poki-games'];
+      else if (pId.includes('uber') || pId.includes('rapido') || pId.includes('ola') || pId.includes('omniride') || pId.includes('transit')) resolvedTemplate = TEMPLATES['uber-rapido-ola'];
+      else if (pId.includes('whatsapp')) resolvedTemplate = TEMPLATES['whatsapp-web'];
+      else if (pId.includes('claude')) resolvedTemplate = TEMPLATES['claude-ai'];
+      else if (pId.includes('chrome')) resolvedTemplate = TEMPLATES['chrome-browser'];
+      else if (pId.includes('spotify')) resolvedTemplate = TEMPLATES['spotify-music'];
+      else if (pId.includes('canva')) resolvedTemplate = TEMPLATES['canva-designer'];
+      else if (pId.includes('ubuntu')) resolvedTemplate = TEMPLATES['ubuntu-desktop'];
+      else if (pId.includes('zomato') || pId.includes('swiggy')) resolvedTemplate = TEMPLATES['zomato-food'];
+      else if (pId.includes('github')) resolvedTemplate = TEMPLATES['github-dev'];
+      else if (pId.includes('figma')) resolvedTemplate = TEMPLATES['figma-studio'];
+      else if (pId.includes('youtube')) resolvedTemplate = TEMPLATES['youtube-platform'];
+      else if (pId.includes('blinkit')) resolvedTemplate = TEMPLATES['blinkit-quick'];
+    }
+
+    // 3. Check prompt parameter or synthesize
+    let initialPrompt = paramPrompt || '';
+    if (!resolvedTemplate) {
+      if (paramPrompt && paramPrompt.trim().length > 0) {
+        const selected = selectTemplateForPrompt(paramPrompt);
+        resolvedTemplate = selected.template;
+      } else {
+        resolvedTemplate = TEMPLATES['poki-games'];
+        initialPrompt = 'Build a Subway Surfer 3D endless runner game with real-time controls';
+      }
+    } else if (!initialPrompt) {
+      initialPrompt = `Build and customize ${resolvedTemplate.name}`;
+    }
+
     setPrompt(initialPrompt);
 
-    const { template } = selectTemplateForPrompt(initialPrompt);
-    for (const [path, content] of Object.entries(template.files)) {
+    const template = resolvedTemplate;
+    for (const [path, content] of Object.entries(template.files as Record<string, string>)) {
       vfs.writeFile(projectId, path, content);
     }
     const all = vfs.getAllFiles();

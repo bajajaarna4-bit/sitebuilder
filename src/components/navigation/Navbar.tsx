@@ -15,11 +15,17 @@ import {
   ChevronRight,
 } from 'lucide-react';
 
+interface NavLinkItem {
+  href: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  highlight?: boolean;
+}
+
 export function NavigationBar() {
   const pathname = usePathname();
 
-  const links = [
-    { href: '/autopilot', label: 'Autopilot', icon: Sparkles, highlight: true },
+  const links: NavLinkItem[] = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutGrid },
     { href: '/database', label: 'Database', icon: Database },
     { href: '/models', label: 'Models', icon: Cpu },

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase/client';
-import { selectTemplateForPrompt } from '@/lib/projects/templates';
+import { selectTemplateForPrompt, TEMPLATES } from '@/lib/projects/templates';
 
 export async function GET() {
   try {
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
 
     const { key, template } = prompt
       ? selectTemplateForPrompt(prompt)
-      : { key: templateKey || 'nextjs-saas', template: null };
+      : { key: templateKey || 'poki-games', template: TEMPLATES[templateKey] || TEMPLATES['poki-games'] };
 
     const projectName = name || (template ? template.name.split('—')[0].trim() : 'New Application');
     const slug = projectName.toLowerCase().replace(/[^a-z0-9]+/g, '-');

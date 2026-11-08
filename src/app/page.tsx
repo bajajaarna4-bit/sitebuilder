@@ -76,18 +76,12 @@ export default function MarketingPage() {
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
           <Link
-            href="/autopilot"
+            href="/dashboard"
             className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-sm rounded-xl transition flex items-center justify-center space-x-2 shadow-xl shadow-cyan-500/20 active:scale-95"
           >
             <Sparkles className="w-4 h-4 text-cyan-200" />
-            <span>NEXUS Autopilot</span>
+            <span>Launch NEXUS Studio</span>
             <ArrowRight className="w-4 h-4" />
-          </Link>
-          <Link
-            href="/dashboard"
-            className="w-full sm:w-auto px-8 py-3.5 bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold text-sm rounded-xl transition flex items-center justify-center space-x-2 shadow-xl shadow-cyan-500/20"
-          >
-            <span>Launch Studio IDE</span>
           </Link>
           <Link
             href="/models"

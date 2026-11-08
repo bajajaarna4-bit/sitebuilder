@@ -128,6 +128,9 @@ export function buildPreviewHtml(files: ProjectFile[], activeRoute = '/'): strin
   <script>
     // Capture runtime errors
     window.onerror = function(msg, url, lineNo, columnNo, error) {
+      if (typeof msg === 'string' && msg.toLowerCase().includes('script error')) {
+        return false;
+      }
       window.parent.postMessage({
         type: 'NEXUS_RUNTIME_ERROR',
         payload: {
@@ -219,8 +222,10 @@ export function buildPreviewHtml(files: ProjectFile[], activeRoute = '/'): strin
           throw new Error('Babel compiler failed to load from CDN. Check your internet connection.');
         }
 
-        // Expose React hooks globally on window so any component or helper function can access them
+        // Expose React and React hooks globally on window so any component or helper function can access them
         if (typeof React !== 'undefined') {
+          window.React = React;
+          window.ReactDOM = ReactDOM;
           window.useState = React.useState;
           window.useEffect = React.useEffect;
           window.useMemo = React.useMemo;

@@ -26,17 +26,122 @@ import {
 
 const INITIAL_PROJECTS: Project[] = [
   {
-    id: 'proj_netflix_01',
+    id: 'proj_poki_games',
     userId: 'user_default',
-    name: 'StreamFlix Media',
-    slug: 'streamflix-media',
-    description: 'Premium video streaming application with hero billboard and watchlist.',
-    template: 'netflix-streaming',
+    name: 'Poki Arcade — Subway Surfers 3D',
+    slug: 'poki-arcade-subway-surfers',
+    description: 'Instant web games platform with real-time playable Subway Surfer endless runner (Arrow keys, jump, slide, coins).',
+    template: 'poki-games',
+    currentStatus: 'READY',
+    framework: 'Next.js 15 + React 19',
+    isArchived: false,
+    settings: { theme: 'dark', autoFix: true, strictTesting: true },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    fileCount: 7,
+  },
+  {
+    id: 'proj_omniride_01',
+    userId: 'user_default',
+    name: 'OmniRide — Uber, Rapido & Ola',
+    slug: 'omniride-transit',
+    description: 'Unified urban mobility aggregator: Rapido bike-taxis, Ola autos, and Uber sedans with live fare calculation and GPS simulation.',
+    template: 'uber-rapido-ola',
+    currentStatus: 'READY',
+    framework: 'Next.js 15 + React 19',
+    isArchived: false,
+    settings: { theme: 'dark', autoFix: true, strictTesting: true },
+    createdAt: new Date(Date.now() - 3600000 * 4).toISOString(),
+    updatedAt: new Date().toISOString(),
+    fileCount: 8,
+  },
+  {
+    id: 'proj_whatsapp_02',
+    userId: 'user_default',
+    name: 'WhatsApp Web',
+    slug: 'whatsapp-web',
+    description: 'Instant messaging suite with chat threads, message bubbles, audio playback, and audio/video calling overlay.',
+    template: 'whatsapp-web',
+    currentStatus: 'READY',
+    framework: 'Next.js 15 + React 19',
+    isArchived: false,
+    settings: { theme: 'dark', autoFix: true, strictTesting: true },
+    createdAt: new Date(Date.now() - 3600000 * 8).toISOString(),
+    updatedAt: new Date().toISOString(),
+    fileCount: 6,
+  },
+  {
+    id: 'proj_claude_03',
+    userId: 'user_default',
+    name: 'Claude 3.5 Sonnet Studio',
+    slug: 'claude-ai-studio',
+    description: 'Interactive AI assistant with side-by-side Artifacts canvas, markdown code preview, and 200k context model switcher.',
+    template: 'claude-ai',
+    currentStatus: 'READY',
+    framework: 'Next.js 15 + React 19',
+    isArchived: false,
+    settings: { theme: 'dark', autoFix: true, strictTesting: true },
+    createdAt: new Date(Date.now() - 3600000 * 12).toISOString(),
+    updatedAt: new Date().toISOString(),
+    fileCount: 6,
+  },
+  {
+    id: 'proj_ubuntu_04',
+    userId: 'user_default',
+    name: 'Ubuntu 24.04 LTS Desktop',
+    slug: 'ubuntu-desktop-os',
+    description: 'Interactive Linux GNOME desktop simulator with top bar, dock launcher, neofetch terminal, and app windows.',
+    template: 'ubuntu-desktop',
+    currentStatus: 'READY',
+    framework: 'Next.js 15 + React 19',
+    isArchived: false,
+    settings: { theme: 'dark', autoFix: true, strictTesting: true },
+    createdAt: new Date(Date.now() - 3600000 * 16).toISOString(),
+    updatedAt: new Date().toISOString(),
+    fileCount: 7,
+  },
+  {
+    id: 'proj_canva_05',
+    userId: 'user_default',
+    name: 'Canva Design Studio',
+    slug: 'canva-design-studio',
+    description: 'Vector graphic design studio with drag-and-drop templates, canvas artboard, shape tools, and layer inspector.',
+    template: 'canva-designer',
+    currentStatus: 'READY',
+    framework: 'Next.js 15 + React 19',
+    isArchived: false,
+    settings: { theme: 'dark', autoFix: true, strictTesting: true },
+    createdAt: new Date(Date.now() - 3600000 * 20).toISOString(),
+    updatedAt: new Date().toISOString(),
+    fileCount: 8,
+  },
+  {
+    id: 'proj_spotify_06',
+    userId: 'user_default',
+    name: 'Spotify Web Player',
+    slug: 'spotify-music-player',
+    description: 'Audio streaming application with interactive now-playing bar, playlist manager, track scrubber, and search.',
+    template: 'spotify-music',
     currentStatus: 'READY',
     framework: 'Next.js 15 + React 19',
     isArchived: false,
     settings: { theme: 'dark', autoFix: true, strictTesting: true },
     createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
+    updatedAt: new Date().toISOString(),
+    fileCount: 7,
+  },
+  {
+    id: 'proj_netflix_01',
+    userId: 'user_default',
+    name: 'StreamFlix Media',
+    slug: 'streamflix-media',
+    description: 'Premium video streaming application with hero billboard, video playback modal, and category carousels.',
+    template: 'netflix-streaming',
+    currentStatus: 'READY',
+    framework: 'Next.js 15 + React 19',
+    isArchived: false,
+    settings: { theme: 'dark', autoFix: true, strictTesting: true },
+    createdAt: new Date(Date.now() - 3600000 * 28).toISOString(),
     updatedAt: new Date().toISOString(),
     fileCount: 8,
   },
@@ -45,13 +150,13 @@ const INITIAL_PROJECTS: Project[] = [
     userId: 'user_default',
     name: 'InstaVibe Social',
     slug: 'instavibe-social',
-    description: 'Social photo sharing platform with stories, likes, and comment threads.',
+    description: 'Social photo sharing platform with stories, likes, comment threads, and direct profile explorer.',
     template: 'instagram-social',
     currentStatus: 'READY',
     framework: 'Next.js 15 + React 19',
     isArchived: false,
     settings: { theme: 'dark', autoFix: true, strictTesting: true },
-    createdAt: new Date(Date.now() - 3600000 * 48).toISOString(),
+    createdAt: new Date(Date.now() - 3600000 * 32).toISOString(),
     updatedAt: new Date().toISOString(),
     fileCount: 6,
   },
@@ -60,13 +165,13 @@ const INITIAL_PROJECTS: Project[] = [
     userId: 'user_default',
     name: 'Aura Commerce',
     slug: 'aura-commerce',
-    description: 'Modern Amazon-style e-commerce store with live cart drawer and reviews.',
+    description: 'Modern Amazon-style e-commerce store with live cart drawer, customer reviews, and fast checkout.',
     template: 'amazon-commerce',
     currentStatus: 'READY',
     framework: 'Next.js 15 + React 19',
     isArchived: false,
     settings: { theme: 'dark', autoFix: true, strictTesting: true },
-    createdAt: new Date(Date.now() - 3600000 * 72).toISOString(),
+    createdAt: new Date(Date.now() - 3600000 * 36).toISOString(),
     updatedAt: new Date().toISOString(),
     fileCount: 7,
   },
@@ -122,7 +227,7 @@ function DashboardContent() {
 
     setProjects([newProject, ...projects]);
     setIsModalOpen(false);
-    router.push(`/studio/${id}?prompt=${encodeURIComponent(newProjectPrompt)}`);
+    router.push(`/studio/${id}?template=${selectedTemplate}&prompt=${encodeURIComponent(newProjectPrompt)}`);
   };
 
   // Delete Project
@@ -228,13 +333,18 @@ function DashboardContent() {
           </p>
         </div>
         <div className="flex items-center space-x-3">
-          <Link
-            href="/autopilot"
-            className="px-4 py-2.5 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-xs rounded-xl transition flex items-center justify-center space-x-2 shadow-lg shadow-cyan-500/10 active:scale-95"
+          <button
+            onClick={() => {
+              setNewProjectPrompt('Build a Subway Surfer 3D endless runner game with real-time controls');
+              setNewProjectName('Subway Surfer 3D');
+              setSelectedTemplate('poki-games');
+              setIsModalOpen(true);
+            }}
+            className="px-4 py-2.5 bg-gradient-to-r from-yellow-400 via-amber-500 to-red-500 hover:opacity-95 text-black font-extrabold text-xs rounded-xl transition flex items-center justify-center space-x-2 shadow-lg shadow-yellow-500/10 active:scale-95"
           >
-            <Sparkles className="w-4 h-4 text-cyan-200" />
-            <span>NEXUS Autopilot</span>
-          </Link>
+            <span>🎮</span>
+            <span>Play Subway Surfers</span>
+          </button>
           <button
             onClick={() => setIsModalOpen(true)}
             className="px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 hover:text-white border border-zinc-700 font-extrabold text-xs rounded-xl transition flex items-center justify-center space-x-2"
@@ -317,7 +427,7 @@ function DashboardContent() {
         {filtered.map((project) => (
           <div
             key={project.id}
-            onClick={() => router.push(`/studio/${project.id}`)}
+            onClick={() => router.push(`/studio/${project.id}?template=${project.template}&prompt=${encodeURIComponent(project.description || project.name)}`)}
             className={`bg-surface-900/80 border rounded-2xl p-5 flex flex-col justify-between transition cursor-pointer group shadow-sm hover:shadow-cyan-500/5 ${
               project.isArchived ? 'border-zinc-800 opacity-60' : 'border-zinc-800/80 hover:border-cyan-500/50'
             }`}
