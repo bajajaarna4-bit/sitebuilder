@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
-import dynamic from 'next/dynamic';
+import nextDynamic from 'next/dynamic';
 import { Project, ProjectFile, AgentTask, TerminalLogEntry, VisualInspectorElement } from '@/types';
 import { VirtualFileSystem } from '@/lib/projects/vfs';
 import { selectTemplateForPrompt, TEMPLATES } from '@/lib/projects/templates';
@@ -51,7 +51,7 @@ import {
   Rocket,
 } from 'lucide-react';
 
-const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
+const MonacoEditor = nextDynamic(() => import('@monaco-editor/react'), { ssr: false });
 
 function StudioWorkspaceContent() {
   const params = useParams();

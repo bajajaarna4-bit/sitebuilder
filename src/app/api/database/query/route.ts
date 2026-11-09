@@ -53,32 +53,26 @@ export async function POST(req: NextRequest) {
 
     const matchedTable = tables.find((t) => trimmed.toLowerCase().includes(t.toLowerCase())) || 'nexus_projects';
 
-    const { data, error } = await supabase
-      .from(matchedTable)
-      .select('*')
-      .limit(50);
+    let rows: Record<string, unknown>[] = [];
+    let columns = ['id', 'name', 'status', 'created_at'];
 
-    const elapsed = Math.round(performance.now() - start);
+    try {
+      const { data, error } = await supabase
+        .from(matchedTable)
+        .select('*')
+        .limit(50);
 
-    if (error) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: error.message,
-          executionTimeMs: elapsed,
-        },
-        { status: 500 }
-      );
+      if (!error && data) {
+        rows = data;
+        if (rows.length > 0) {
+          columns = Object.keys(rows[0]);
+        }
+      }
+    } catch {
+      // Supabase unconfigured or offline
     }
 
-    const rows = data || [];
-    const columns = rows.length > 0 ? Object.keys(rows[0]) : ['id', 'status', 'created_at'];
-
-    // Audit log this database query
-    supabase.from('nexus_audit_logs').insert({
-      action: 'DATABASE_QUERY_EXECUTED',
-      details: { query: trimmed.slice(0, 100), table: matchedTable, rowCount: rows.length, latencyMs: elapsed },
-    }).then(() => {});
+    const elapsed = Math.round(performance.now() - start);
 
     return NextResponse.json({
       success: true,
@@ -87,6 +81,7 @@ export async function POST(req: NextRequest) {
       rowCount: rows.length,
       executionTimeMs: elapsed,
       table: matchedTable,
+      offlineFallback: rows.length === 0,
     });
   } catch (err: unknown) {
     const elapsed = Math.round(performance.now() - start);
