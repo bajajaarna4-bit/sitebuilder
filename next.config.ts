@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
+const isDockerOrLinux = process.platform === "linux" || process.env.DOCKER_BUILD === "1";
+
 const nextConfig: NextConfig = {
+  ...(isDockerOrLinux ? { output: "standalone" } : {}),
   reactStrictMode: true,
   poweredByHeader: false,
   typescript: {

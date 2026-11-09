@@ -8,6 +8,30 @@ $$\text{IDEA} \longrightarrow \text{PLAN} \longrightarrow \text{DESIGN} \longrig
 
 ---
 
+## 🚀 1-Click Direct Cloud Deployment
+
+Deploy this entire platform to the cloud in seconds:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbajajaarna4-bit%2Fsitebuilder)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/bajajaarna4-bit/sitebuilder)
+
+### Option A: Vercel (Recommended)
+1. Go to [vercel.com/new](https://vercel.com/new).
+2. Import repository `bajajaarna4-bit/sitebuilder`.
+3. Framework: **Next.js** (auto-detected via `vercel.json`).
+4. Click **Deploy**. The platform will compile and go live immediately with zero configuration needed.
+
+### Option B: Docker / Container (Railway, Render, Fly.io, AWS)
+```bash
+# Build production Docker container
+docker build -t verve-sitebuilder .
+
+# Run container on port 3000
+docker run -p 3000:3000 verve-sitebuilder
+```
+
+---
+
 ## Key Highlights
 
 - **Multi-Agent Autonomous Orchestration**: 10 specialized agent roles (Product Planner, UI/UX Designer, Frontend Developer, Backend Developer, Database Engineer, Debugging Engineer, Testing Engineer, Security Engineer, Performance Engineer, Deployment Engineer).
