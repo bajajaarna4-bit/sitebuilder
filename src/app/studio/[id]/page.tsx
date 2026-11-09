@@ -120,7 +120,8 @@ function StudioWorkspaceContent() {
     // 2. Check projectId keywords
     if (!resolvedTemplate && projectId) {
       const pId = projectId.toLowerCase();
-      if (pId.includes('psyche') || pId.includes('mindset') || pId.includes('reels')) resolvedTemplate = TEMPLATES['psyche-reels'];
+      if (pId.includes('candy') || pId.includes('crush') || pId.includes('farm') || pId.includes('harvest')) resolvedTemplate = TEMPLATES['candy-crush-farm'];
+      else if (pId.includes('psyche') || pId.includes('mindset') || pId.includes('reels')) resolvedTemplate = TEMPLATES['psyche-reels'];
       else if (pId.includes('saai') || pId.includes('parliament') || pId.includes('kronos')) resolvedTemplate = TEMPLATES['saai-pro'];
       else if (pId.includes('office') || pId.includes('syndicate') || pId.includes('swarm')) resolvedTemplate = TEMPLATES['virtual-office-ai'];
       else if (pId.includes('pinterest') || pId.includes('aura') || pId.includes('aesthetic')) resolvedTemplate = TEMPLATES['pinterest-canva-ai'];
@@ -128,7 +129,7 @@ function StudioWorkspaceContent() {
       else if (pId.includes('amazon')) resolvedTemplate = TEMPLATES['amazon-commerce'];
       else if (pId.includes('instagram')) resolvedTemplate = TEMPLATES['instagram-social'];
       else if (pId.includes('netflix')) resolvedTemplate = TEMPLATES['google-ai-netflix'];
-      else if (pId.includes('poki') || pId.includes('subway') || pId.includes('game')) resolvedTemplate = TEMPLATES['poki-games'];
+      else if (pId.includes('poki') || pId.includes('subway') || pId.includes('surfer') || pId.includes('runner')) resolvedTemplate = TEMPLATES['poki-games'];
       else if (pId.includes('uber') || pId.includes('rapido') || pId.includes('ola') || pId.includes('omniride') || pId.includes('transit')) resolvedTemplate = TEMPLATES['uber-rapido-ola'];
       else if (pId.includes('whatsapp')) resolvedTemplate = TEMPLATES['whatsapp-web'];
       else if (pId.includes('claude')) resolvedTemplate = TEMPLATES['claude-ai'];

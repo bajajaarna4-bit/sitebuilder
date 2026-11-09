@@ -11,6 +11,7 @@ import { pinterestCanvaAiTemplate } from './pinterest_canva_ai';
 import { virtualOfficeAiTemplate } from './virtual_office_ai';
 import { saaiProTemplate } from './saai_pro';
 import { psycheReelsTemplate } from './psyche_reels';
+import { candyCrushFarmTemplate } from './candy_crush_farm';
 import {
   spotifyClone,
   omegleClone,
@@ -45,6 +46,7 @@ export interface ProjectTemplate {
 }
 
 export const TEMPLATES: Record<string, ProjectTemplate> = {
+  'candy-crush-farm': candyCrushFarmTemplate,
   'psyche-reels': psycheReelsTemplate,
   'saai-pro': saaiProTemplate,
   'virtual-office-ai': virtualOfficeAiTemplate,
@@ -81,6 +83,7 @@ export const TEMPLATES: Record<string, ProjectTemplate> = {
 };
 
 export type TemplateKey =
+  | 'candy-crush-farm'
   | 'psyche-reels'
   | 'saai-pro'
   | 'virtual-office-ai'
@@ -118,6 +121,18 @@ export type TemplateKey =
 
 export function selectTemplateForPrompt(prompt: string): { key: TemplateKey; template: ProjectTemplate } {
   const p = (prompt || '').toLowerCase().trim();
+
+  // 00000. CANDY CRUSH SAGA × FAMILY FARM (SWEET HARVEST SAGA)
+  if (
+    p.includes('candy crush') ||
+    p.includes('candy') ||
+    p.includes('crush saga') ||
+    p.includes('sweet harvest') ||
+    (p.includes('farm') && (p.includes('family') || p.includes('candy') || p.includes('crush') || p.includes('merge') || p.includes('match') || p.includes('crop') || p.includes('saga'))) ||
+    (p.includes('match') && (p.includes('3') || p.includes('three') || p.includes('farm') || p.includes('candy')))
+  ) {
+    return { key: 'candy-crush-farm', template: candyCrushFarmTemplate };
+  }
 
   // 0000. PSYCHE REELS (मनःसूत्रम्) — Psychological Reel Stream & Mindset Profiler
   if (
@@ -205,11 +220,10 @@ export function selectTemplateForPrompt(prompt: string): { key: TemplateKey; tem
     p.includes('poki') ||
     p.includes('subway') ||
     p.includes('surfer') ||
-    p.includes('game') ||
-    p.includes('arcade') ||
-    p.includes('runner') ||
-    p.includes('play') ||
-    p.includes('gaming')
+    p.includes('arcade runner') ||
+    (p.includes('runner') && !p.includes('farm')) ||
+    (p.includes('arcade') && !p.includes('farm') && !p.includes('candy')) ||
+    (p.includes('game') && (p.includes('subway') || p.includes('surfer') || p.includes('poki') || p.includes('lane') || p.includes('runner') || p.includes('endless')))
   ) {
     return { key: 'poki-games', template: pokiClone };
   }

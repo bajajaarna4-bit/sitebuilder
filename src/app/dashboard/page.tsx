@@ -26,6 +26,21 @@ import {
 
 const INITIAL_PROJECTS: Project[] = [
   {
+    id: 'proj_candy_farm_01',
+    userId: 'user_default',
+    name: 'Candy Crush Saga × Family Farm — Sweet Harvest',
+    slug: 'candy-crush-family-farm',
+    description: 'Real-time hybrid game: Match-3 candy cascades yield harvest resources (berries, fertilizer, sugar, animal fodder) to cultivate crops, feed livestock, bake treats, and fulfill deliveries.',
+    template: 'candy-crush-farm',
+    currentStatus: 'READY',
+    framework: 'Next.js 15 + React 19',
+    isArchived: false,
+    settings: { theme: 'dark', autoFix: true, strictTesting: true },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    fileCount: 8,
+  },
+  {
     id: 'proj_psyche_01',
     userId: 'user_default',
     name: 'PSYCHE REELS (मनःसूत्रम्) — Mindset Profiler',
@@ -395,6 +410,18 @@ function DashboardContent() {
         <div className="flex items-center space-x-3">
           <button
             onClick={() => {
+              setNewProjectPrompt('build candy crush saga game merged with family farm');
+              setNewProjectName('Candy Crush × Family Farm');
+              setSelectedTemplate('candy-crush-farm');
+              setIsModalOpen(true);
+            }}
+            className="px-4 py-2.5 bg-gradient-to-r from-pink-500 via-rose-500 to-amber-400 hover:opacity-95 text-white font-extrabold text-xs rounded-xl transition flex items-center justify-center space-x-2 shadow-lg shadow-pink-500/20 active:scale-95 ring-1 ring-white/20"
+          >
+            <span>🍬</span>
+            <span>Candy Crush × Family Farm</span>
+          </button>
+          <button
+            onClick={() => {
               setNewProjectPrompt('Build a Subway Surfer 3D endless runner game with real-time controls');
               setNewProjectName('Subway Surfer 3D');
               setSelectedTemplate('poki-games');
@@ -636,6 +663,12 @@ function DashboardContent() {
                   onChange={(e) => setSelectedTemplate(e.target.value)}
                   className="w-full bg-surface-950 border border-zinc-700 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-cyan-500"
                 >
+                  <option value="candy-crush-farm">Candy Crush Saga × Family Farm (Match-3 & Farm Sim)</option>
+                  <option value="psyche-reels">PSYCHE REELS (मनःसूत्रम्) — Short Reels & Mindset Profiler</option>
+                  <option value="saai-pro">SAAI.PRO — AI & Systems Architect Portfolio</option>
+                  <option value="virtual-office-ai">NEXUS SYNDICATE — Autonomous AI Virtual Office</option>
+                  <option value="pinterest-canva-ai">AURA — Pinterest × Canva × Google AI Studio</option>
+                  <option value="poki-games">Poki Arcade & Subway Surfers 3D Runner</option>
                   <option value="netflix-streaming">Netflix Clone (Video Streaming & Media)</option>
                   <option value="instagram-social">Instagram Social (Feed, Stories, Likes)</option>
                   <option value="amazon-commerce">Amazon E-Commerce (Catalog, Cart, Reviews)</option>

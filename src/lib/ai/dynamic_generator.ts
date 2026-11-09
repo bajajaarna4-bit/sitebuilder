@@ -4,6 +4,7 @@ import { pinterestCanvaAiTemplate } from '../projects/templates/pinterest_canva_
 import { virtualOfficeAiTemplate } from '../projects/templates/virtual_office_ai';
 import { saaiProTemplate } from '../projects/templates/saai_pro';
 import { psycheReelsTemplate } from '../projects/templates/psyche_reels';
+import { candyCrushFarmTemplate } from '../projects/templates/candy_crush_farm';
 
 /**
  * Dynamic Adaptive Application Synthesizer.
@@ -15,6 +16,18 @@ export function synthesizeDynamicApp(prompt: string): ProjectTemplate {
   const p = prompt.trim();
   const lower = p.toLowerCase();
   const safePromptEscaped = JSON.stringify(prompt);
+
+  // 00000. CANDY CRUSH SAGA × FAMILY FARM (SWEET HARVEST SAGA)
+  if (
+    lower.includes('candy crush') ||
+    lower.includes('candy') ||
+    lower.includes('crush saga') ||
+    lower.includes('sweet harvest') ||
+    (lower.includes('farm') && (lower.includes('family') || lower.includes('candy') || lower.includes('crush') || lower.includes('merge') || lower.includes('match') || lower.includes('crop') || lower.includes('saga'))) ||
+    (lower.includes('match') && (lower.includes('3') || lower.includes('three') || lower.includes('farm') || lower.includes('candy')))
+  ) {
+    return candyCrushFarmTemplate;
+  }
 
   // 0000. PSYCHE REELS & MINDSET PROFILER
   if (
@@ -79,16 +92,14 @@ export function synthesizeDynamicApp(prompt: string): ProjectTemplate {
     return googleAiNetflixTemplate;
   }
 
-  // 1. GAME & ARCADE SYNTHESIS (Subway Surfer, Runner, Poki, Arcade, Playable Games)
+  // 1. POKI & SUBWAY SURFER ENDLESS RUNNER SYNTHESIS
   if (
-    lower.includes('game') ||
     lower.includes('subway') ||
     lower.includes('surfer') ||
-    lower.includes('play') ||
-    lower.includes('arcade') ||
-    lower.includes('runner') ||
     lower.includes('poki') ||
-    lower.includes('gaming')
+    (lower.includes('runner') && !lower.includes('farm')) ||
+    (lower.includes('arcade') && !lower.includes('farm') && !lower.includes('candy')) ||
+    (lower.includes('game') && (lower.includes('subway') || lower.includes('surfer') || lower.includes('lane') || lower.includes('runner') || lower.includes('train')))
   ) {
     const gameTitle = lower.includes('subway') ? 'Subway Surfer 3D: Tokyo Rail Rush' : 'Infinite Arcade Runner';
     return {
