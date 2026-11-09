@@ -97,3 +97,4 @@ test('CANDY CRUSH × FAMILY FARM: Template Integrity & Interactive Components', 
   const appStart = content.indexOf("'/src/App.tsx': `");
   assert.ok(appStart !== -1, 'Must contain App.tsx file definition');
 });
+

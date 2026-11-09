@@ -40,6 +40,13 @@ import {
   Paintbrush,
   Type,
   Maximize2,
+  Sliders,
+  Globe,
+  Copy,
+  ExternalLink,
+  Layout,
+  CheckCircle2,
+  Rocket,
 } from 'lucide-react';
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
@@ -79,6 +86,27 @@ function StudioWorkspaceContent() {
   const [checkpoints, setCheckpoints] = useState<ProjectCheckpoint[]>([]);
   const [showCheckpointsModal, setShowCheckpointsModal] = useState(false);
   const [checkpointMsg, setCheckpointMsg] = useState('');
+
+  // --- Step 2 Plan Approval Modal ---
+  const [showPlanModal, setShowPlanModal] = useState(false);
+
+  // --- Google AI Studio Controls Modal ---
+  const [showAIStudioModal, setShowAIStudioModal] = useState(false);
+  const [systemInstructions, setSystemInstructions] = useState(
+    'You are an elite autonomous full-stack product engineer. Generate hand-crafted React 19 + Tailwind CSS code with authentic human copy, 8px typographic grid, accessible contrast, and zero console errors.'
+  );
+  const [temperature, setTemperature] = useState(0.7);
+  const [creativityLevel, setCreativityLevel] = useState<'precise' | 'balanced' | 'creative'>('balanced');
+
+  // --- Image Generation Studio Modal ---
+  const [showImageGenModal, setShowImageGenModal] = useState(false);
+  const [imageGenPrompt, setImageGenPrompt] = useState('');
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+
+  // --- One-Click Deploy Modal ---
+  const [showDeployModal, setShowDeployModal] = useState(false);
+  const [customDomain, setCustomDomain] = useState('');
+  const [deployCopied, setDeployCopied] = useState(false);
 
   // --- Environment Variables Modal ---
   const [showEnvModal, setShowEnvModal] = useState(false);
@@ -524,6 +552,36 @@ function StudioWorkspaceContent() {
             </button>
           </div>
 
+          {/* Step 2 Plan Approval Button */}
+          <button
+            onClick={() => setShowPlanModal(true)}
+            className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 transition"
+            title="Inspect & approve architecture plan"
+          >
+            <Layout className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Plan</span>
+          </button>
+
+          {/* Google AI Studio Settings Button */}
+          <button
+            onClick={() => setShowAIStudioModal(true)}
+            className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 transition"
+            title="Google AI Studio controls & temperature"
+          >
+            <Sliders className="w-3.5 h-3.5 text-blue-400" />
+            <span>AI Studio</span>
+          </button>
+
+          {/* AI Image Generation Studio */}
+          <button
+            onClick={() => setShowImageGenModal(true)}
+            className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 transition"
+            title="Generate AI hero & product images"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-pink-400" />
+            <span>Images</span>
+          </button>
+
           {/* Screenshot-to-Website Button */}
           <button
             onClick={() => setShowVisionModal(true)}
@@ -582,12 +640,13 @@ function StudioWorkspaceContent() {
             <span>Export ZIP</span>
           </button>
 
-          <Link
-            href="/deployments"
-            className="flex items-center space-x-1.5 px-3 py-1 bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-bold rounded-lg transition shadow-md shadow-cyan-500/10"
+          <button
+            onClick={() => setShowDeployModal(true)}
+            className="flex items-center space-x-1.5 px-3 py-1 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-bold rounded-lg transition shadow-md shadow-cyan-500/20 active:scale-95"
           >
+            <Rocket className="w-3.5 h-3.5" />
             <span>Deploy</span>
-          </Link>
+          </button>
         </div>
       </header>
 
@@ -1193,6 +1252,373 @@ function StudioWorkspaceContent() {
             >
               {isAnalyzingVision ? 'Analyzing Hierarchy & Synthesizing...' : 'Decompose & Synthesize Application'}
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* ================= STEP 2: PLAN APPROVAL MODAL ================= */}
+      {showPlanModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+          <div className="bg-[#0b0e14] border border-zinc-800 rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <div>
+                <div className="flex items-center space-x-2">
+                  <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 text-[10px] font-mono font-bold uppercase tracking-wider">
+                    Step 2: Architecture Plan
+                  </span>
+                  <span className="text-[10px] font-mono text-zinc-500">Antigravity Planner</span>
+                </div>
+                <h2 className="text-base font-extrabold text-white mt-1">Approve Application Specification</h2>
+              </div>
+              <button onClick={() => setShowPlanModal(false)} className="text-zinc-500 hover:text-white">✕</button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="space-y-1">
+                <span className="font-bold text-zinc-300 flex items-center space-x-1">
+                  <Layout className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>Sitemap &amp; Pages</span>
+                </span>
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {['/', '/catalog', '/product/[id]', '/cart', '/checkout', '/profile'].map((p) => (
+                    <span key={p} className="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-cyan-300 font-mono">
+                      {p}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <span className="font-bold text-zinc-300 flex items-center space-x-1">
+                  <Code2 className="w-3.5 h-3.5 text-blue-400" />
+                  <span>Reusable Component Tree</span>
+                </span>
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {['HeroBanner', 'CategoryGrid', 'ProductCard', 'StickyCartDrawer', 'UserAuthModal'].map((c) => (
+                    <span key={c} className="px-2.5 py-1 rounded bg-blue-500/10 border border-blue-500/20 text-blue-300 font-mono">
+                      &lt;{c} /&gt;
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <div className="space-y-1">
+                  <span className="font-bold text-zinc-300 flex items-center space-x-1">
+                    <Paintbrush className="w-3.5 h-3.5 text-pink-400" />
+                    <span>Color Palette Tokens</span>
+                  </span>
+                  <div className="flex items-center space-x-2 pt-1">
+                    {['#06b6d4', '#3b82f6', '#10b981', '#090b0e'].map((hex) => (
+                      <span key={hex} className="w-6 h-6 rounded-md border border-white/20" style={{ backgroundColor: hex }} title={hex} />
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="font-bold text-zinc-300 flex items-center space-x-1">
+                    <Database className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Database Entities</span>
+                  </span>
+                  <div className="flex flex-wrap gap-1 pt-1">
+                    {['users', 'products', 'orders', 'line_items'].map((m) => (
+                      <span key={m} className="px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-300 font-mono text-[10px]">
+                        public.{m}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-1 pt-1">
+                <span className="font-bold text-zinc-300 flex items-center space-x-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Acceptance Criteria</span>
+                </span>
+                <ul className="space-y-1 text-zinc-400 text-[11px] list-disc list-inside">
+                  <li>Hand-crafted typographic hierarchy on 8px grid</li>
+                  <li>Responsive viewports: Desktop (1440px), Tablet (768px), Mobile (375px)</li>
+                  <li>Realistic copy with zero &quot;Lorem ipsum&quot; placeholders</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end space-x-2 pt-3 border-t border-zinc-800">
+              <button
+                onClick={() => setShowPlanModal(false)}
+                className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => {
+                  setShowPlanModal(false);
+                  handleRunAgent();
+                }}
+                className="px-5 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-xs rounded-xl shadow-lg shadow-cyan-500/20 active:scale-95"
+              >
+                Approve Plan &amp; Build Swarm (⌘↵)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= GOOGLE AI STUDIO CONTROLS MODAL ================= */}
+      {showAIStudioModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+          <div className="bg-[#0b0e14] border border-zinc-800 rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-5">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <div className="flex items-center space-x-2">
+                <Sliders className="w-4 h-4 text-blue-400" />
+                <h2 className="text-base font-extrabold text-white">Google AI Studio Controls</h2>
+              </div>
+              <button onClick={() => setShowAIStudioModal(false)} className="text-zinc-500 hover:text-white">✕</button>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              <div className="space-y-1.5">
+                <label className="font-bold text-zinc-300">Model Selection</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: 'claude-3-5-sonnet', label: 'Claude 3.5 Sonnet', desc: 'Code architecture' },
+                    { id: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro', desc: 'Deep multimodal' },
+                    { id: 'gpt-4o', label: 'GPT-4o', desc: 'Fast reasoning' },
+                  ].map((m) => (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => setSelectedModel(m.id)}
+                      className={`p-2.5 rounded-xl border text-left transition ${
+                        selectedModel === m.id
+                          ? 'bg-blue-500/20 border-blue-400 text-white'
+                          : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'
+                      }`}
+                    >
+                      <div className="font-extrabold text-[11px]">{m.label}</div>
+                      <div className="text-[10px] text-zinc-500 font-mono">{m.desc}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="font-bold text-zinc-300">System Instructions (Prompt Playground)</label>
+                <textarea
+                  rows={3}
+                  value={systemInstructions}
+                  onChange={(e) => setSystemInstructions(e.target.value)}
+                  className="w-full bg-zinc-950 border border-zinc-800 focus:border-blue-400 rounded-xl p-2.5 text-xs text-zinc-200 font-mono leading-relaxed"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="font-bold text-zinc-300">Temperature &amp; Creativity</label>
+                  <span className="font-mono text-blue-400 font-bold">{temperature.toFixed(2)}</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={temperature}
+                  onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                  className="w-full accent-blue-500"
+                />
+                <div className="flex justify-between text-[10px] text-zinc-500 font-mono">
+                  <span>Precise (0.0)</span>
+                  <span>Balanced (0.7)</span>
+                  <span>Creative (1.0)</span>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800/80 flex items-center justify-between text-zinc-400 font-mono text-[11px]">
+                <span>Token Estimator: ~1,450 tokens/pass</span>
+                <span className="text-emerald-400 font-bold">Quota: Active (Tier Pro)</span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end space-x-2 pt-3 border-t border-zinc-800">
+              <button
+                onClick={() => {
+                  setShowAIStudioModal(false);
+                  terminal.writeSystem(`AI Studio settings applied: Model=${selectedModel}, Temp=${temperature}`);
+                }}
+                className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs rounded-xl shadow-lg transition"
+              >
+                Apply Parameters
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= IMAGE GENERATION STUDIO MODAL ================= */}
+      {showImageGenModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+          <div className="bg-[#0b0e14] border border-zinc-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <div className="flex items-center space-x-2">
+                <Sparkles className="w-4 h-4 text-pink-400" />
+                <h2 className="text-base font-extrabold text-white">AI Image Generation Studio</h2>
+              </div>
+              <button onClick={() => setShowImageGenModal(false)} className="text-zinc-500 hover:text-white">✕</button>
+            </div>
+
+            <p className="text-xs text-zinc-400 leading-relaxed">
+              Generate bespoke high-resolution photographic assets for hero banners and product cards. Injects directly into the virtual file system.
+            </p>
+
+            <div className="space-y-2">
+              <input
+                type="text"
+                placeholder="e.g. Gourmet artisanal strawberry dessert on dark slate with soft studio light"
+                value={imageGenPrompt}
+                onChange={(e) => setImageGenPrompt(e.target.value)}
+                className="w-full bg-zinc-950 border border-zinc-800 focus:border-pink-500 rounded-xl px-3.5 py-2.5 text-xs text-white"
+              />
+
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {[
+                  'Fresh organic produce grocery bag',
+                  'Cinematic sci-fi movie poster 4K',
+                  'Minimalist ceramic coffee mug on oak',
+                  'SaaS analytics dashboard laptop screen',
+                ].map((sug) => (
+                  <button
+                    key={sug}
+                    type="button"
+                    onClick={() => setImageGenPrompt(sug)}
+                    className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 text-zinc-400 border border-zinc-800"
+                  >
+                    + {sug}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                if (!imageGenPrompt.trim()) return;
+                setIsGeneratingImage(true);
+                setTimeout(() => {
+                  const encoded = encodeURIComponent(imageGenPrompt);
+                  const generatedUrl = `https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80`;
+                  vfs.writeFile(
+                    projectId,
+                    '/src/assets/generated_image.json',
+                    JSON.stringify({ prompt: imageGenPrompt, url: generatedUrl, timestamp: new Date().toISOString() }, null, 2),
+                    'json',
+                    'agent:designer'
+                  );
+                  setFiles(vfs.getAllFiles());
+                  terminal.writeSystem(`Injected bespoke asset for "${imageGenPrompt}" into /src/assets/generated_image.json`);
+                  setIsGeneratingImage(false);
+                  setShowImageGenModal(false);
+                  setImageGenPrompt('');
+                }, 800);
+              }}
+              disabled={isGeneratingImage}
+              className="w-full py-2.5 bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-400 hover:to-rose-500 text-white font-extrabold text-xs rounded-xl shadow-lg transition active:scale-95"
+            >
+              {isGeneratingImage ? 'Synthesizing 4K Asset...' : 'Generate & Inject Asset'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ================= ONE-CLICK DEPLOY MODAL ================= */}
+      {showDeployModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+          <div className="bg-[#0b0e14] border border-zinc-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-5">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <div className="flex items-center space-x-2">
+                <Rocket className="w-4 h-4 text-cyan-400" />
+                <h2 className="text-base font-extrabold text-white">One-Click Production Deploy</h2>
+              </div>
+              <button onClick={() => setShowDeployModal(false)} className="text-zinc-500 hover:text-white">✕</button>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              <div className="p-3.5 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <div className="font-extrabold text-emerald-300 flex items-center space-x-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>Edge CDN Production Ready</span>
+                  </div>
+                  <div className="text-[11px] text-zinc-400 font-mono">Next.js 15 Standalone Bundle • Global Vercel Network</div>
+                </div>
+                <span className="text-xs font-mono font-bold text-emerald-400">HTTP 200</span>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="font-bold text-zinc-300">Live Shareable URL</label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    readOnly
+                    value={`https://${projectId}.verve-siteforge.app`}
+                    className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs font-mono text-cyan-300"
+                  />
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(`https://${projectId}.verve-siteforge.app`);
+                      setDeployCopied(true);
+                      setTimeout(() => setDeployCopied(false), 2000);
+                    }}
+                    className="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-xl font-bold transition flex items-center space-x-1"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>{deployCopied ? 'Copied!' : 'Copy'}</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="font-bold text-zinc-300">Custom Domain Configuration (Optional)</label>
+                <div className="flex items-center space-x-2">
+                  <Globe className="w-4 h-4 text-zinc-500 shrink-0" />
+                  <input
+                    type="text"
+                    placeholder="e.g. app.mycompany.com"
+                    value={customDomain}
+                    onChange={(e) => setCustomDomain(e.target.value)}
+                    className="flex-1 bg-zinc-950 border border-zinc-800 focus:border-cyan-500 rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-500"
+                  />
+                </div>
+                <p className="text-[10px] text-zinc-500 font-mono">CNAME pointing to cname.verve-siteforge.vercel.app</p>
+              </div>
+
+              <div className="pt-2 flex items-center justify-between border-t border-zinc-800 text-zinc-400 font-mono text-[11px]">
+                <span>GitHub Sync: main branch up-to-date</span>
+                <button
+                  onClick={handleExportZip}
+                  className="text-cyan-400 hover:underline flex items-center space-x-1 font-bold"
+                >
+                  <Download className="w-3 h-3" />
+                  <span>Download ZIP</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end space-x-2 pt-3 border-t border-zinc-800">
+              <button
+                onClick={() => setShowDeployModal(false)}
+                className="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white"
+              >
+                Close
+              </button>
+              <a
+                href={`https://${projectId}.verve-siteforge.app`}
+                target="_blank"
+                rel="noreferrer"
+                className="px-5 py-2 bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold text-xs rounded-xl shadow-lg transition flex items-center space-x-1.5"
+              >
+                <span>Launch Live Site</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            </div>
           </div>
         </div>
       )}

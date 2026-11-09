@@ -936,3 +936,4 @@ export const candyCrushFarmTemplate: ProjectTemplate = {
 `,
   },
 };
+
