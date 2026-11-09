@@ -233,6 +233,24 @@ export function buildPreviewHtml(files: ProjectFile[], activeRoute = '/'): strin
           window.useRef = React.useRef;
           window.createContext = React.createContext;
           window.useContext = React.useContext;
+
+          // Universal Lucide icon shims so any icon name compiles & renders smoothly
+          var commonIcons = [
+            'Sparkles', 'ArrowRight', 'Check', 'Search', 'X', 'Plus', 'Play', 'Pause',
+            'Heart', 'Bookmark', 'Share2', 'Terminal', 'Database', 'Shield', 'Layers',
+            'Send', 'Download', 'History', 'Eye', 'Code', 'Cpu', 'Zap', 'Bell', 'User',
+            'Settings', 'Home', 'Folder', 'Trash2', 'Edit', 'Copy', 'ChevronRight',
+            'ChevronLeft', 'ChevronDown', 'ChevronUp', 'Menu', 'RefreshCw', 'ExternalLink',
+            'Phone', 'Video', 'MessageSquare', 'Mic', 'Volume2', 'VolumeX', 'Image', 'Filter'
+          ];
+          commonIcons.forEach(function(iconName) {
+            window[iconName] = function(props) {
+              return React.createElement('span', {
+                className: (props.className || '') + ' inline-flex items-center justify-center select-none font-mono text-xs opacity-90',
+                style: props.style
+              }, '✦');
+            };
+          });
         }
 
         // Compile TSX/JSX source using Babel Standalone
@@ -255,7 +273,7 @@ export function buildPreviewHtml(files: ProjectFile[], activeRoute = '/'): strin
           'var useRef = React.useRef;\\n' +
           'var createContext = React.createContext;\\n' +
           'var useContext = React.useContext;\\n' +
-          transformResult.code + '\\nreturn typeof App !== "undefined" ? App : null;'
+          transformResult.code + '\\nreturn typeof App !== "undefined" ? App : typeof Page !== "undefined" ? Page : typeof Main !== "undefined" ? Main : typeof Dashboard !== "undefined" ? Dashboard : null;'
         );
 
         var AppComponent = scopeRunner(React, ReactDOM);
