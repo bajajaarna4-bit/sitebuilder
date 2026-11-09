@@ -63,5 +63,10 @@ test('NEXUS CLONER: Multi-Domain Workspace Templates & Recognition', async (t) =
     assert.strictEqual(selectTemplate('build an omegle video chat roulette'), 'omegle-chat');
     assert.strictEqual(selectTemplate('clone figma collaborative design tool'), 'figma-studio');
   });
+
+  await t.test('verifies Ubuntu clone template has zero unescaped quote syntax errors in neofetch art', () => {
+    assert.ok(!clonesFile.includes(" ,$$P\\'"), 'Must not contain unescaped single quotes inside neofetch strings');
+    assert.ok(!clonesFile.includes("\\`$$$."), 'Must not contain unescaped backticks inside neofetch strings');
+  });
 });
 

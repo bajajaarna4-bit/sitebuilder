@@ -1225,12 +1225,12 @@ export const ubuntuClone: ProjectTemplate = {
     '       _,met$$$$$gg.          developer@nexus-ubuntu',
     '    ,g$$$$$$$$$$$$$$$P.       OS: Ubuntu 24.04 LTS x86_64',
     '  ,g$$P"     """Y$$.".        Kernel: 6.8.0-generic',
-    ' ,$$P\'              \`$$$.     Uptime: 42 days, 14 hours',
-    ',\$$P       ,ggs.     \`$$b:   Packages: 1842 (dpkg)',
-    'd$$\'     ,$P"\'   .    $$$     Shell: bash 5.2.21',
-    '$$P      d$\'     ,    $$$P    Resolution: 1920x1080',
-    '$$:      $$.   -    ,d$$\'     DE: GNOME 46',
-    '$$\;      Y$b._   _,d$P\'       Memory: 4820MiB / 32140MiB',
+    ' ,$$P                 $$$.    Uptime: 42 days, 14 hours',
+    ',$$P        ,ggs.     $$b:    Packages: 1842 (dpkg)',
+    'd$$       ,$P"    .   $$$     Shell: bash 5.2.21',
+    '$$P      d$"     ,    $$$P    Resolution: 1920x1080',
+    '$$:      $$.   -    ,d$$      DE: GNOME 46',
+    '$$;      Y$b._   _,d$P        Memory: 4820MiB / 32140MiB',
     '',
     'developer@nexus-ubuntu:~$ '
   ]);
