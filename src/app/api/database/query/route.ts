@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase/client';
 
+export const dynamic = 'force-dynamic';
+
 const FORBIDDEN_SQL_PATTERNS = [
   /drop\s+database/i,
   /alter\s+system/i,

@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "description": "Production-grade autonomous AI website and full-stack application development platform",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
