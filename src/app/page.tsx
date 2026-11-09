@@ -27,7 +27,6 @@ import {
   FileCode,
   Rocket,
   Paintbrush,
-  Sparkle,
   ShoppingBag,
   Film,
   Camera,
